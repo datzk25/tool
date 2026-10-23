@@ -1,1 +1,3243 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FF Token API Admin Panel</title>
+<style>
+/* ============================================================
+   RESET + TOKENS
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#06090e;
+  --panel:#0b1119;
+  --panel-2:#0e1520;
+  --border:#18232f;
+  --border-2:#22303f;
+  --txt:#c7d6e5;
+  --txt-dim:#7b90a6;
+  --muted:#4d6175;
+  --green:#00e5a0;
+  --cyan:#22d3ee;
+  --blue:#3b82f6;
+  --red:#ff4d6d;
+  --amber:#ffb020;
+  --purple:#a78bfa;
+  --radius:14px;
+  --mono:'JetBrains Mono','Fira Code','SFMono-Regular',Consolas,'Courier New',monospace;
+  --sidebar-w:252px;
+  --input-bg:#080d14;
+  --input-bg-focus:#0a1017;
+  --code-bg:#070b11;
+  --term-bg:#05080d;
+  --term-head:#0a0f16;
+  --card-grad-1:rgba(14,21,32,.92);
+  --card-grad-2:rgba(9,14,21,.92);
+  --topbar-bg:rgba(6,9,14,.82);
+  --sidebar-grad-1:rgba(11,17,25,.96);
+  --sidebar-grad-2:rgba(8,12,18,.96);
+  --row-bg:rgba(255,255,255,.018);
+  --row-hover:rgba(0,229,160,.045);
+  --logo-txt:#e8f4ff;
+}
+html[data-theme="light"]{
+  --bg:#eef2f7;
+  --panel:#ffffff;
+  --panel-2:#f1f5f9;
+  --border:#dde5ee;
+  --border-2:#c7d2e0;
+  --txt:#1e293b;
+  --txt-dim:#475569;
+  --muted:#94a3b8;
+  --green:#059669;
+  --cyan:#0891b2;
+  --blue:#2563eb;
+  --red:#dc2626;
+  --amber:#d97706;
+  --purple:#7c3aed;
+  --input-bg:#ffffff;
+  --input-bg-focus:#f8fafc;
+  --code-bg:#f1f5f9;
+  --term-bg:#0d1117;
+  --term-head:#161b22;
+  --card-grad-1:rgba(255,255,255,.98);
+  --card-grad-2:rgba(248,250,252,.98);
+  --topbar-bg:rgba(238,242,247,.85);
+  --sidebar-grad-1:rgba(255,255,255,.98);
+  --sidebar-grad-2:rgba(248,250,252,.98);
+  --row-bg:rgba(0,0,0,.015);
+  --row-hover:rgba(5,150,105,.06);
+  --logo-txt:#0f172a;
+}
+html[data-theme="light"] body{background:var(--bg)}
+html[data-theme="light"] .bg-grid{
+  background-image:
+    linear-gradient(rgba(5,150,105,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(5,150,105,.06) 1px,transparent 1px);
+}
+html[data-theme="light"] .bg-glow::before{opacity:.14}
+html[data-theme="light"] .bg-glow::after{opacity:.12}
+html[data-theme="light"] .scanline{background:linear-gradient(180deg,transparent,rgba(5,150,105,.05),transparent)}
+html[data-theme="light"] ::selection{background:rgba(5,150,105,.22);color:#04231a}
+html[data-theme="light"] ::-webkit-scrollbar-track{background:#e2e8f0}
+html[data-theme="light"] ::-webkit-scrollbar-thumb{background:#cbd5e1;border-color:#e2e8f0}
+html[data-theme="light"] ::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+html[data-theme="light"] .brand-txt b{color:var(--logo-txt)}
+html[data-theme="light"] .btn{
+  background:linear-gradient(135deg,rgba(5,150,105,.14),rgba(5,150,105,.05));
+  border-color:rgba(5,150,105,.4);color:var(--green);
+}
+html[data-theme="light"] .btn:hover:not(:disabled){
+  background:linear-gradient(135deg,rgba(5,150,105,.22),rgba(5,150,105,.10));
+  box-shadow:0 0 26px -6px rgba(5,150,105,.45);
+}
+html[data-theme="light"] .btn.ghost{background:var(--panel-2);border-color:var(--border-2);color:var(--txt-dim)}
+html[data-theme="light"] .btn.ghost:hover{border-color:rgba(5,150,105,.4);color:var(--green)}
+html[data-theme="light"] .card:hover{box-shadow:0 18px 40px -22px rgba(15,23,42,.18)}
+html[data-theme="light"] .nav-item:hover{background:rgba(0,0,0,.035)}
+html[data-theme="light"] .nav-item.active{
+  background:linear-gradient(90deg,rgba(5,150,105,.12),rgba(5,150,105,.02));
+  border-color:rgba(5,150,105,.25);
+}
+html[data-theme="light"] .toast{background:rgba(255,255,255,.98)}
+html[data-theme="light"] .topbar{background:var(--topbar-bg)}
+html[data-theme="light"] .res-row{background:rgba(0,0,0,.015)}
+html[data-theme="light"] .res-row:hover{background:rgba(5,150,105,.055);border-color:rgba(5,150,105,.28)}
+html[data-theme="light"] .feed-item:hover{background:rgba(0,0,0,.03)}
+html[data-theme="light"] .tbl tbody tr:hover{background:rgba(5,150,105,.05)}
+html[data-theme="light"] .modal{background:var(--panel)}
 
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--txt);font-family:var(--mono);
+  font-size:13px;line-height:1.55;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;transition:background .3s,color .3s;
+}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:#080c12}
+::-webkit-scrollbar-thumb{background:#1d2a38;border-radius:8px;border:2px solid #080c12}
+::-webkit-scrollbar-thumb:hover{background:#2b3d50}
+::selection{background:rgba(0,229,160,.28);color:#eafff7}
+input,button,select,textarea{font-family:inherit;font-size:inherit;outline:none}
+
+#view-batch .split-col:last-child{
+  display:flex;
+  flex-direction:column;
+}
+#view-batch #batchAccList{
+  flex:0 0 auto;      /* fixed height rakhbe */
+  max-height:180px;
+}
+#view-batch #batchResList{
+  flex:1 1 auto;
+  min-height:0;
+  max-height:440px;
+}
+#view-batch .merged-split{
+  align-items: start;   /* grid items stretch na kore */
+}
+.bg-grid{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,229,160,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,160,.045) 1px,transparent 1px);
+  background-size:46px 46px;
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 5%,transparent 78%);
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 5%,transparent 78%);
+  animation:gridDrift 22s linear infinite;
+}
+@keyframes gridDrift{from{background-position:0 0,0 0}to{background-position:0 46px,46px 0}}
+.bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-glow::before,.bg-glow::after{content:'';position:absolute;border-radius:50%;filter:blur(130px);opacity:.20}
+.bg-glow::before{width:620px;height:620px;top:-260px;left:-160px;background:radial-gradient(circle,var(--green),transparent 70%);animation:float1 18s ease-in-out infinite}
+.bg-glow::after{width:560px;height:560px;bottom:-240px;right:-140px;background:radial-gradient(circle,var(--blue),transparent 70%);animation:float2 22s ease-in-out infinite}
+@keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(90px,70px)}}
+@keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(-80px,-60px)}}
+.scanline{position:fixed;left:0;right:0;height:140px;z-index:0;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(0,229,160,.035),transparent);animation:scan 9s linear infinite}
+@keyframes scan{0%{top:-140px}100%{top:100%}}
+
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar{
+  width:var(--sidebar-w);flex:0 0 var(--sidebar-w);
+  background:linear-gradient(180deg,var(--sidebar-grad-1),var(--sidebar-grad-2));
+  border-right:1px solid var(--border);backdrop-filter:blur(14px);
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+  z-index:40;transition:background .3s,border-color .3s;
+}
+.brand{padding:20px 18px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:11px}
+.brand-logo{
+  width:38px;height:38px;border-radius:11px;flex:0 0 38px;
+  display:grid;place-items:center;overflow:hidden;
+  background:linear-gradient(135deg,rgba(0,229,160,.16),rgba(59,130,246,.16));
+  border:1px solid rgba(0,229,160,.35);color:var(--green);font-weight:700;font-size:15px;
+  position:relative;animation:logoPulse 3.2s ease-in-out infinite;
+}
+.brand-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.brand-logo::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(0,229,160,.35),transparent 70%);
+  transform:translateX(-120%);animation:shine 3.6s ease-in-out infinite;pointer-events:none;
+}
+@keyframes shine{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+@keyframes logoPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,229,160,.28)}50%{box-shadow:0 0 0 9px rgba(0,229,160,0)}}
+.brand-txt b{display:block;font-size:12.5px;letter-spacing:.5px;color:var(--logo-txt)}
+.brand-txt span{font-size:9.5px;letter-spacing:1.6px;color:var(--muted);text-transform:uppercase}
+
+.nav{padding:14px 12px;flex:1;overflow-y:auto}
+.nav-label{font-size:9px;letter-spacing:1.8px;color:var(--muted);text-transform:uppercase;padding:12px 10px 7px}
+.nav-item{
+  display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;cursor:pointer;
+  color:var(--txt-dim);font-size:12px;letter-spacing:.4px;border:1px solid transparent;
+  position:relative;transition:.22s cubic-bezier(.4,0,.2,1);user-select:none;
+}
+.nav-item svg{width:16px;height:16px;flex:0 0 16px;stroke-width:1.7}
+.nav-item:hover{background:rgba(255,255,255,.035);color:var(--txt);transform:translateX(3px)}
+.nav-item.active{
+  background:linear-gradient(90deg,rgba(0,229,160,.13),rgba(0,229,160,.02));
+  color:var(--green);border-color:rgba(0,229,160,.22);
+}
+.nav-item.active::before{
+  content:'';position:absolute;left:-12px;top:50%;transform:translateY(-50%);
+  width:3px;height:20px;border-radius:0 4px 4px 0;background:var(--green);
+  box-shadow:0 0 12px var(--green);
+}
+.sidebar-foot{padding:14px;border-top:1px solid var(--border);font-size:10px;color:var(--muted)}
+.sidebar-foot b{color:var(--txt-dim);font-weight:500}
+
+/* ---------- MAIN ---------- */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{
+  position:sticky;top:0;z-index:35;display:flex;align-items:center;gap:14px;
+  padding:13px 24px;background:var(--topbar-bg);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);transition:background .3s;
+}
+.hamburger{
+  display:none;width:34px;height:34px;border-radius:9px;
+  background:var(--panel-2);border:1px solid var(--border);
+  color:var(--txt);cursor:pointer;place-items:center;
+}
+.page-title{font-size:13px;letter-spacing:1.4px;text-transform:uppercase;color:var(--txt)}
+.page-title small{display:block;font-size:9.5px;letter-spacing:1.4px;color:var(--muted);text-transform:none;margin-top:1px}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.status-stack{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.status-pill{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 13px;border-radius:30px;font-size:10.5px;letter-spacing:1.1px;
+  background:rgba(255,255,255,.03);border:1px solid var(--border-2);
+  color:var(--txt-dim);transition:.3s;white-space:nowrap;
+}
+.status-pill.ok{color:var(--green);border-color:rgba(0,229,160,.32);background:rgba(0,229,160,.07)}
+.status-pill.bad{color:var(--red);border-color:rgba(255,77,109,.32);background:rgba(255,77,109,.07)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted);position:relative;flex:0 0 7px}
+.status-pill.ok .dot{background:var(--green);box-shadow:0 0 10px var(--green);animation:blip 1.8s infinite}
+.status-pill.bad .dot{background:var(--red);box-shadow:0 0 10px var(--red);animation:blip 1.1s infinite}
+@keyframes blip{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.82)}}
+.clock{
+  font-size:11px;
+  color:var(--txt-dim);
+  letter-spacing:1px;
+  padding:6px 12px;
+  border-radius:9px;
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  white-space:nowrap;   /* ⭐ এক লাইনে ধরে রাখবে */
+  display:inline-flex;  /* ⭐ flex layout, break হবে না */
+  align-items:center;
+}
+.icon-btn{
+  width:34px;height:34px;border-radius:9px;background:var(--panel-2);border:1px solid var(--border);
+  color:var(--txt-dim);cursor:pointer;display:grid;place-items:center;transition:.22s;position:relative;
+}
+.icon-btn:hover{color:var(--green);border-color:rgba(0,229,160,.4);background:rgba(0,229,160,.07)}
+.icon-btn svg{width:16px;height:16px;stroke-width:1.8}
+html[data-theme="dark"] .icon-sun{display:block}
+html[data-theme="dark"] .icon-moon{display:none}
+html[data-theme="light"] .icon-sun{display:none}
+html[data-theme="light"] .icon-moon{display:block}
+
+.content{padding:26px 24px 60px;flex:1}
+.view{display:none}
+.view.active{display:block;animation:viewIn .42s cubic-bezier(.22,1,.36,1)}
+@keyframes viewIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.grid{display:grid;gap:16px}
+.g-4{grid-template-columns:repeat(4,1fr)}
+.g-2{grid-template-columns:1.25fr 1fr}
+@media(max-width:1180px){.g-4{grid-template-columns:repeat(2,1fr)}.g-2{grid-template-columns:1fr}}
+@media(max-width:620px){.g-4{grid-template-columns:1fr}}
+
+/* merged card split */
+.merged-split{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:1000px){.merged-split{grid-template-columns:1fr}}
+.split-col{min-width:0}
+
+.card{
+  position:relative;
+  background:linear-gradient(160deg,var(--card-grad-1),var(--card-grad-2));
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px;overflow:hidden;transition:.28s cubic-bezier(.4,0,.2,1);
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,229,160,.55),transparent);
+  opacity:0;transition:.35s;
+}
+.card:hover{border-color:var(--border-2);box-shadow:0 18px 40px -22px rgba(0,0,0,.9)}
+.card:hover::before{opacity:1}
+.card.no-hover:hover{transform:none}
+
+.card-title{
+  display:flex;align-items:center;gap:9px;font-size:10.5px;letter-spacing:1.6px;
+  text-transform:uppercase;color:var(--txt-dim);margin-bottom:16px;
+}
+.card-title .bar{width:3px;height:13px;border-radius:3px;background:var(--green);box-shadow:0 0 10px rgba(0,229,160,.7)}
+.card-title .right{margin-left:auto;font-size:10px;letter-spacing:.6px;color:var(--muted)}
+
+.section-title{
+  display:flex;align-items:center;gap:9px;font-size:10.5px;letter-spacing:1.6px;
+  text-transform:uppercase;color:var(--txt-dim);margin-bottom:14px;
+}
+.section-title .bar{width:3px;height:13px;border-radius:3px;background:var(--green);box-shadow:0 0 10px rgba(0,229,160,.7)}
+.section-title .bar.c{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.section-title .bar.p{background:var(--purple);box-shadow:0 0 10px var(--purple)}
+.section-title .right{margin-left:auto;font-size:10px;letter-spacing:.6px;color:var(--muted);text-transform:none}
+
+/* STAT CARDS */
+.stat{position:relative;overflow:hidden}
+.stat .icon{
+  width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+  background:rgba(0,229,160,.09);border:1px solid rgba(0,229,160,.22);color:var(--green);
+  margin-bottom:13px;
+}
+.stat .icon svg{width:17px;height:17px;stroke-width:1.8}
+.stat .val{font-size:29px;font-weight:700;letter-spacing:-.5px;color:var(--txt);line-height:1.1}
+.stat .lbl{font-size:9.5px;letter-spacing:1.7px;text-transform:uppercase;color:var(--muted);margin-top:5px}
+.stat.c-cyan .icon{background:rgba(34,211,238,.09);border-color:rgba(34,211,238,.22);color:var(--cyan)}
+.stat.c-red .icon{background:rgba(255,77,109,.09);border-color:rgba(255,77,109,.22);color:var(--red)}
+.stat.c-purple .icon{background:rgba(167,139,250,.09);border-color:rgba(167,139,250,.22);color:var(--purple)}
+.bump{animation:bump .45s cubic-bezier(.34,1.56,.64,1)}
+@keyframes bump{0%{transform:scale(1)}45%{transform:scale(1.14);color:var(--green)}100%{transform:scale(1)}}
+
+/* FORM */
+.field{margin-bottom:15px}
+.field label{display:block;font-size:9.5px;letter-spacing:1.7px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.input-wrap{position:relative;display:flex;align-items:center}
+.input-wrap .pre{position:absolute;left:13px;color:var(--green);font-size:11px;letter-spacing:.5px;pointer-events:none;opacity:.85}
+input[type=text],input[type=password],input[type=number],textarea,select{
+  width:100%;background:var(--input-bg);border:1px solid var(--border-2);border-radius:11px;
+  color:var(--txt);padding:12px 42px 12px 13px;font-size:12.5px;letter-spacing:.4px;transition:.24s;
+}
+input[type=number]{padding-right:13px}
+textarea{padding:12px;resize:vertical;min-height:110px;font-family:var(--mono);font-size:11.5px;line-height:1.65}
+input:focus,textarea:focus,select:focus{border-color:rgba(0,229,160,.55);background:var(--input-bg-focus);box-shadow:0 0 0 3px rgba(0,229,160,.10)}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:.65}
+.eye{
+  position:absolute;right:8px;width:30px;height:30px;border-radius:8px;
+  background:transparent;border:none;color:var(--muted);cursor:pointer;
+  display:grid;place-items:center;transition:.2s;
+}
+.eye:hover{color:var(--green);background:rgba(0,229,160,.08)}
+.eye svg{width:15px;height:15px;stroke-width:1.7}
+
+.btn{
+  position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  width:100%;padding:13px 18px;border-radius:11px;border:1px solid rgba(0,229,160,.4);
+  background:linear-gradient(135deg,rgba(0,229,160,.17),rgba(0,229,160,.06));
+  color:var(--green);font-size:11.5px;letter-spacing:1.7px;text-transform:uppercase;
+  font-weight:600;cursor:pointer;transition:.25s;
+}
+.btn:hover:not(:disabled){
+  background:linear-gradient(135deg,rgba(0,229,160,.28),rgba(0,229,160,.12));
+  box-shadow:0 0 26px -6px rgba(0,229,160,.55);transform:translateY(-1px);
+}
+.btn:active:not(:disabled){transform:translateY(0) scale(.99)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);transition:.55s}
+.btn:hover::after{left:100%}
+.btn.ghost{background:var(--panel-2);border-color:var(--border-2);color:var(--txt-dim);width:auto}
+.btn.ghost:hover{border-color:rgba(0,229,160,.4);color:var(--green);box-shadow:none}
+.btn.danger{background:linear-gradient(135deg,rgba(255,77,109,.14),rgba(255,77,109,.05));border-color:rgba(255,77,109,.4);color:var(--red)}
+.btn.danger:hover:not(:disabled){background:linear-gradient(135deg,rgba(255,77,109,.24),rgba(255,77,109,.10));box-shadow:0 0 26px -6px rgba(255,77,109,.55)}
+.btn.sm{padding:8px 14px;font-size:10px;letter-spacing:1.2px;width:auto}
+/* ---- Dropdown ---- */
+.dropdown{position:relative;display:inline-block}
+.dropdown-menu{
+  position:absolute;top:calc(100% + 6px);left:0;z-index:60;
+  min-width:240px;background:var(--panel);border:1px solid var(--border-2);
+  border-radius:11px;padding:6px;display:none;
+  box-shadow:0 18px 40px -14px rgba(0,0,0,.85);
+  animation:ddIn .18s ease;
+}
+.dropdown.open .dropdown-menu{display:block}
+.dropdown.open > button{color:var(--green);border-color:rgba(0,229,160,.55);background:rgba(0,229,160,.08)}
+@keyframes ddIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.dropdown-item{
+  padding:8px 12px;border-radius:8px;font-size:11px;
+  color:var(--txt-dim);cursor:pointer;transition:.18s;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  user-select:none;
+}
+.dropdown-item:hover{background:rgba(0,229,160,.08);color:var(--green)}
+.dropdown-item .dd-hint{font-size:9.5px;color:var(--muted);font-family:var(--mono);letter-spacing:.3px}
+.dropdown-item:hover .dd-hint{color:var(--green);opacity:.75}
+.dropdown-divider{height:1px;background:var(--border);margin:5px 4px}
+.spinner{width:14px;height:14px;border-radius:50%;border:2px solid rgba(0,229,160,.25);border-top-color:var(--green);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.result-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:52px 20px;text-align:center;color:var(--muted)}
+.result-empty svg{width:38px;height:38px;stroke-width:1.2;opacity:.4}
+.result-empty p{font-size:11px;letter-spacing:.9px;max-width:280px;line-height:1.8}
+
+.res-row{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;
+  background:var(--row-bg);border:1px solid var(--border);margin-bottom:8px;
+  transition:.2s;animation:rowIn .4s cubic-bezier(.22,1,.36,1) backwards;
+}
+@keyframes rowIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+.res-row:hover{background:var(--row-hover);border-color:rgba(0,229,160,.22)}
+.res-k{flex:0 0 118px;font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}
+.res-v{flex:1;min-width:0;font-size:11.5px;color:var(--txt);word-break:break-all;line-height:1.6}
+.res-v.mono-sm{font-size:10.5px;color:var(--txt-dim)}
+.res-v.hl{color:var(--green)}
+.copy{
+  flex:0 0 auto;width:28px;height:28px;border-radius:8px;background:transparent;
+  border:1px solid var(--border-2);color:var(--muted);cursor:pointer;display:grid;place-items:center;transition:.2s;
+}
+.copy:hover{color:var(--green);border-color:rgba(0,229,160,.45);background:rgba(0,229,160,.08)}
+.copy.done{color:var(--green);border-color:var(--green);background:rgba(0,229,160,.15)}
+.copy svg{width:13px;height:13px;stroke-width:1.8}
+
+.badge-status{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:20px;font-size:9.5px;letter-spacing:1.3px;text-transform:uppercase}
+.badge-status.ok{color:var(--green);background:rgba(0,229,160,.11);border:1px solid rgba(0,229,160,.3)}
+.badge-status.err{color:var(--red);background:rgba(255,77,109,.11);border:1px solid rgba(255,77,109,.3)}
+
+.jwt-box{
+  background:var(--code-bg);border:1px solid var(--border);border-radius:11px;
+  padding:13px;max-height:290px;overflow:auto;font-size:10.5px;line-height:1.75;
+  color:var(--txt-dim);white-space:pre-wrap;word-break:break-all;transition:background .3s;
+}
+.jwt-box .k{color:var(--cyan)}
+.jwt-box .s{color:var(--green)}
+.jwt-box .n{color:var(--amber)}
+.jwt-box .b{color:var(--purple)}
+.jwt-box .c{color:var(--muted);font-style:italic}
+.jwt-box .dec{color:var(--amber)}
+.jwt-chip{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:20px;font-size:9.5px;letter-spacing:1.1px;margin-left:6px}
+.jwt-chip.ok{color:var(--green);background:rgba(0,229,160,.11);border:1px solid rgba(0,229,160,.28)}
+
+/* BATCH UI */
+.drop{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  padding:30px 18px;border:2px dashed var(--border-2);border-radius:12px;
+  background:rgba(255,255,255,.012);color:var(--muted);cursor:pointer;text-align:center;transition:.25s;
+}
+.drop:hover,.drop.over{border-color:rgba(0,229,160,.55);background:rgba(0,229,160,.055);color:var(--green)}
+.drop svg{width:34px;height:34px;stroke-width:1.4;opacity:.75}
+.drop b{font-size:11.5px;letter-spacing:1.2px;color:var(--txt);font-weight:600}
+.drop span{font-size:10px;letter-spacing:.6px}
+.drop .fmt{font-size:9.5px;color:var(--muted);background:var(--code-bg);padding:3px 9px;border-radius:8px;border:1px solid var(--border)}
+
+.batch-acc{
+  display:flex;align-items:center;gap:10px;padding:7px 11px;border-radius:9px;font-size:11px;
+  background:var(--row-bg);border:1px solid var(--border);margin-bottom:5px;
+}
+.batch-acc .n{flex:0 0 26px;color:var(--muted);font-size:10px}
+.batch-acc .u{flex:1;color:var(--txt);word-break:break-all}
+.batch-acc .st{flex:0 0 auto;font-size:9.5px;padding:2px 8px;border-radius:20px}
+.batch-acc .st.ok{color:var(--green);background:rgba(0,229,160,.11)}
+.batch-acc .st.err{color:var(--red);background:rgba(255,77,109,.11)}
+.batch-acc .st.wait{color:var(--muted);background:rgba(255,255,255,.04)}
+.batch-acc .st.run{color:var(--amber);background:rgba(255,176,32,.11)}
+
+.progress{height:8px;border-radius:20px;background:var(--panel-2);border:1px solid var(--border);overflow:hidden;margin:14px 0 8px}
+.progress-bar{height:100%;width:0%;border-radius:20px;background:linear-gradient(90deg,var(--green),var(--cyan));transition:width .3s cubic-bezier(.4,0,.2,1);box-shadow:0 0 12px rgba(0,229,160,.65)}
+.progress-meta{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);letter-spacing:.6px}
+
+.chk{display:flex;align-items:center;gap:9px;font-size:11px;color:var(--txt-dim);cursor:pointer;user-select:none}
+.chk input{
+  appearance:none;width:34px;height:19px;border-radius:20px;background:var(--panel-2);
+  border:1px solid var(--border-2);position:relative;cursor:pointer;transition:.24s;
+}
+.chk input:checked{background:rgba(0,229,160,.25);border-color:rgba(0,229,160,.55)}
+.chk input::after{content:'';position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:var(--muted);transition:.24s}
+.chk input:checked::after{left:calc(100% - 15px);background:var(--green);box-shadow:0 0 8px var(--green)}
+
+/* TERMINAL */
+.terminal{background:var(--term-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:background .3s}
+.term-head{display:flex;align-items:center;gap:7px;padding:9px 13px;background:var(--term-head);border-bottom:1px solid var(--border)}
+.term-head i{width:10px;height:10px;border-radius:50%;display:block}
+.term-head i:nth-child(1){background:#ff5f57}
+.term-head i:nth-child(2){background:#ffbd2e}
+.term-head i:nth-child(3){background:#28c840}
+.term-head span{margin-left:8px;font-size:10px;letter-spacing:1.4px;color:var(--muted)}
+.term-body{padding:13px;height:250px;overflow-y:auto;font-size:11px;line-height:1.85;color:var(--txt-dim)}
+.term-line{color:var(--txt-dim);white-space:pre-wrap;word-break:break-word;animation:termIn .3s ease backwards}
+@keyframes termIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.term-line .p{color:var(--green)}
+.term-line.ok{color:var(--green)}
+.term-line.err{color:var(--red)}
+.term-line.warn{color:var(--amber)}
+.term-line.info{color:var(--cyan)}
+.cursor{display:inline-block;width:7px;height:13px;background:var(--green);vertical-align:-2px;margin-left:2px;animation:blink 1.05s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:11.5px}
+.tbl th{text-align:left;padding:10px 12px;font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);font-weight:500}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--border);color:var(--txt-dim);vertical-align:middle}
+.tbl tbody tr{transition:.18s}
+.tbl tbody tr:hover{background:rgba(0,229,160,.04)}
+.tbl tbody tr:hover td{color:var(--txt)}
+.empty-row td{text-align:center;padding:38px 12px;color:var(--muted);font-size:11px;letter-spacing:1px}
+.pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:9.5px;letter-spacing:1.1px}
+.pill.ok{color:var(--green);background:rgba(0,229,160,.11);border:1px solid rgba(0,229,160,.25)}
+.pill.err{color:var(--red);background:rgba(255,77,109,.11);border:1px solid rgba(255,77,109,.25)}
+.cell-token{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;color:var(--txt-dim);display:inline-block;vertical-align:middle}
+.copy-mini{
+  display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;
+  background:transparent;border:1px solid var(--border-2);color:var(--muted);cursor:pointer;transition:.2s;vertical-align:middle;
+}
+.copy-mini:hover{color:var(--green);border-color:rgba(0,229,160,.45);background:rgba(0,229,160,.08)}
+.copy-mini.del:hover{color:var(--red);border-color:rgba(255,77,109,.45);background:rgba(255,77,109,.08)}
+.actions-cell{display:flex;gap:4px;align-items:center}
+
+/* REGION */
+.region-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:11px}
+.region{
+  display:flex;align-items:center;gap:11px;padding:12px;border-radius:11px;
+  background:rgba(255,255,255,.02);border:1px solid var(--border);
+  transition:.25s cubic-bezier(.4,0,.2,1);cursor:default;animation:rowIn .4s backwards;
+}
+.region:hover{transform:translateY(-3px);border-color:rgba(0,229,160,.35);background:rgba(0,229,160,.055);box-shadow:0 12px 26px -18px rgba(0,229,160,.8)}
+.region .flag{font-size:19px;line-height:1}
+.region .code{font-size:12px;color:var(--txt);letter-spacing:1.4px;font-weight:600}
+.region .name{font-size:9.5px;color:var(--muted);letter-spacing:.5px}
+
+/* FEED */
+.feed{display:flex;flex-direction:column;gap:2px}
+.feed-item{
+  display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:9px;
+  transition:.2s;animation:rowIn .35s backwards;
+}
+.feed-item.clickable{cursor:pointer}
+.feed-item:hover{background:rgba(255,255,255,.03)}
+.feed-item.clickable:hover{background:rgba(0,229,160,.06);transform:translateX(3px)}
+.feed-item .ic{width:26px;height:26px;flex:0 0 26px;border-radius:8px;display:grid;place-items:center}
+.feed-item .ic.ok{background:rgba(0,229,160,.1);color:var(--green);border:1px solid rgba(0,229,160,.22)}
+.feed-item .ic.err{background:rgba(255,77,109,.1);color:var(--red);border:1px solid rgba(255,77,109,.22)}
+.feed-item .ic svg{width:13px;height:13px;stroke-width:2}
+.feed-item .tx{flex:1;min-width:0}
+.feed-item .tx b{display:block;font-size:11.5px;color:var(--txt);font-weight:500}
+.feed-item .tx span{font-size:9.5px;color:var(--muted);letter-spacing:.5px}
+.feed-item .tm{font-size:9.5px;color:var(--muted);white-space:nowrap}
+
+.feed-pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);flex-wrap:wrap}
+.feed-pagination:empty{display:none}
+.feed-pagination button{
+  min-width:30px;height:30px;border-radius:8px;background:var(--panel-2);
+  border:1px solid var(--border);color:var(--txt-dim);cursor:pointer;
+  font-size:11px;padding:0 8px;transition:.2s;
+}
+.feed-pagination button:hover:not(:disabled){color:var(--green);border-color:rgba(0,229,160,.4);background:rgba(0,229,160,.07)}
+.feed-pagination button.active{color:var(--green);border-color:var(--green);background:rgba(0,229,160,.12);font-weight:600}
+.feed-pagination button:disabled{opacity:.4;cursor:not-allowed}
+.feed-pagination .info{font-size:10px;color:var(--muted);letter-spacing:.8px;margin:0 6px}
+
+/* TOASTS */
+.toast-wrap{position:fixed;top:18px;right:18px;z-index:400;display:flex;flex-direction:column;gap:10px}
+.toast{
+  display:flex;align-items:center;gap:11px;min-width:250px;max-width:340px;
+  padding:12px 15px;border-radius:11px;background:rgba(12,18,26,.97);
+  border:1px solid var(--border-2);backdrop-filter:blur(14px);
+  font-size:11.5px;color:var(--txt);box-shadow:0 18px 40px -18px rgba(0,0,0,.95);
+  animation:toastIn .38s cubic-bezier(.22,1,.36,1);
+}
+.toast.out{animation:toastOut .3s forwards}
+@keyframes toastIn{from{opacity:0;transform:translateX(60px) scale(.94)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(60px) scale(.94)}}
+.toast.ok{border-color:rgba(0,229,160,.42)}
+.toast.err{border-color:rgba(255,77,109,.42)}
+.toast.info{border-color:rgba(34,211,238,.42)}
+.toast .bar{width:3px;height:26px;border-radius:3px;flex:0 0 3px}
+.toast.ok .bar{background:var(--green);box-shadow:0 0 10px var(--green)}
+.toast.err .bar{background:var(--red);box-shadow:0 0 10px var(--red)}
+.toast.info .bar{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+
+/* MODAL */
+.modal-overlay{
+  position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.72);
+  backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex;animation:modalIn .22s}
+@keyframes modalIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--panel);border:1px solid var(--border-2);border-radius:14px;
+  width:100%;max-width:640px;max-height:85vh;display:flex;flex-direction:column;
+  overflow:hidden;box-shadow:0 30px 70px -20px rgba(0,0,0,.9);
+  animation:modalUp .3s cubic-bezier(.22,1,.36,1);
+}
+@keyframes modalUp{from{transform:translateY(20px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.modal-title{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--txt-dim);display:flex;align-items:center;gap:9px}
+.modal-title .bar{width:3px;height:13px;border-radius:3px;background:var(--green);box-shadow:0 0 10px rgba(0,229,160,.7)}
+.modal-close{
+  width:32px;height:32px;border-radius:9px;background:var(--panel-2);border:1px solid var(--border);
+  color:var(--txt-dim);cursor:pointer;display:grid;place-items:center;transition:.2s;
+}
+.modal-close:hover{color:var(--red);border-color:rgba(255,77,109,.4);background:rgba(255,77,109,.08)}
+.modal-close svg{width:15px;height:15px;stroke-width:2}
+.modal-body{padding:20px;overflow-y:auto;font-size:12px}
+.modal-row{display:flex;gap:14px;padding:11px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.modal-row:last-child{border-bottom:none}
+.modal-k{flex:0 0 120px;font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.modal-v{flex:1;font-size:11.5px;color:var(--txt);word-break:break-all;line-height:1.65;min-width:0}
+.modal-v code{
+  background:var(--code-bg);border:1px solid var(--border);border-radius:6px;
+  padding:2px 6px;font-size:10.5px;color:var(--green);font-family:var(--mono);
+  display:inline-block;max-width:100%;word-break:break-all;
+}
+.modal-v.hl{color:var(--green)}
+.modal-v .copy-mini{margin-left:6px}
+
+/* MISC */
+.hint{
+  display:flex;gap:9px;padding:11px 13px;border-radius:10px;font-size:10.5px;line-height:1.7;
+  background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);color:#9fc4ef;margin-top:14px;
+}
+html[data-theme="light"] .hint{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.22);color:#1e40af}
+.hint svg{width:14px;height:14px;flex:0 0 14px;margin-top:2px;stroke-width:1.8}
+.code-inline{background:var(--code-bg);border:1px solid var(--border);border-radius:7px;padding:2px 7px;font-size:10.5px;color:var(--green)}
+.divider{height:1px;background:var(--border);margin:16px 0}
+.dd-close{ display:none; }
+/* ============================================================
+   MOBILE FIXES
+   ============================================================ */
+@media(max-width:900px){
+  .sidebar{
+    position:fixed !important;
+    left:0;
+    top:0;
+    height:100vh;
+    width:var(--sidebar-w);
+    flex:0 0 var(--sidebar-w);
+    transform:translateX(-100%);
+    transition:transform .32s cubic-bezier(.4,0,.2,1),
+               box-shadow .32s ease;
+    z-index:50;
+    box-shadow:none;
+  }
+  .sidebar.open{
+    transform:translateX(0);
+    box-shadow:0 0 70px rgba(0,0,0,.85);
+  }
+
+  /* ⭐ Hamburger button visible on mobile */
+  .hamburger{
+    display:grid !important;
+    flex:0 0 auto;
+  }
+
+  /* ⭐ Main content takes full width (sidebar overlays it) */
+  .main{
+    width:100%;
+    min-width:0;
+  }
+
+  /* ⭐ Topbar tighter spacing on mobile */
+  .topbar{
+    padding:11px 14px;
+    gap:10px;
+  }
+  /* ---- FIX 1: Dropdown → Bottom Sheet ---- */
+  .dropdown-menu{
+    position:fixed !important;
+    left:12px !important;
+    right:12px !important;
+    top:auto !important;
+    bottom:12px !important;
+    width:auto !important;
+    min-width:0 !important;
+    max-width:none !important;
+    max-height:70vh;
+    overflow-y:auto;
+    box-shadow:0 -12px 50px -10px rgba(0,0,0,.9);
+    animation:ddSheetIn .25s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes ddSheetIn{
+    from{opacity:0;transform:translateY(30px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  .dropdown-item{
+    padding:12px 14px;
+    font-size:12px;
+  }
+  /* ============================================================
+     Mobile: status + clock stacked, same width, same size
+     ============================================================ */
+  /* ---- Bottom sheet header (grabber + close button) ---- */
+  .dd-close{
+    display:flex !important;   /* ⭐ force override */ 
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
+
+    width:100%;
+    height:38px;
+    padding:0 14px;
+    margin-bottom:4px;
+
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--border);
+
+    color:var(--muted);
+    cursor:pointer;
+
+    position:relative;
+
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:1.6px;
+    text-transform:uppercase;
+
+    transition:.18s;
+  }
+
+  /* grab handle bar (top center) */
+  .dd-close::before{
+    content:'';
+    position:absolute;
+    top:6px;
+    left:50%;
+    transform:translateX(-50%);
+    width:38px;
+    height:4px;
+    border-radius:4px;
+    background:var(--border-2);
+    opacity:.55;
+  }
+
+  .dd-close:hover{
+    color:var(--red);
+    background:rgba(255,77,109,.06);
+  }
+  .dd-close:hover svg{
+    color:var(--red);
+  }
+
+  .dd-close svg{
+    width:16px;
+    height:16px;
+    stroke-width:2.2;
+    transition:.18s;
+  }
+
+  .status-stack{
+    flex-direction:column;
+    align-items:stretch;
+    gap:3px;
+    min-width:0;
+  }
+
+  /* দুটো card — same design, same size */
+  .status-stack .status-pill,
+  .status-stack .clock{
+    width:100%;
+    justify-content:center;
+    text-align:center;
+    margin:0;
+    border-radius:7px;
+    padding:4px 9px;
+    font-size:9.5px;
+    letter-spacing:.6px;
+    line-height:1.25;
+    white-space:nowrap;
+    box-sizing:border-box;
+  }
+
+  /* Status pill — একটু ছোট (clock এর সাথে match করতে) */
+  .status-stack .status-pill{
+    font-size:9px;
+    padding:4px 8px;
+    letter-spacing:.8px;
+  }
+
+  /* clock number এর জন্য একটু বেশি জায়গা */
+  .status-stack .clock{
+    font-size:10px;
+    letter-spacing:.5px;
+  }
+
+  /* ছোট dot — mobile এ proportion ঠিক রাখতে */
+  .status-stack .status-pill .dot{
+    width:6px;
+    height:6px;
+    flex:0 0 6px;
+  }
+
+  /* যদি কোথাও .clock{display:none} rule থেকে থাকে, override */
+  .status-stack .clock{
+    display:inline-flex !important;
+  }
+
+  .sidebar::after{
+    content:'';
+    position:fixed;inset:0;
+    background:rgba(0,0,0,.55);
+    backdrop-filter:blur(4px);
+    z-index:-1;
+    opacity:0;pointer-events:none;transition:opacity .3s;
+  }
+  .sidebar.open::after{opacity:1;pointer-events:auto}
+  /* ---- FIX 4: Page title + subtitle ---- */
+  .page-title{
+    flex:1;
+    min-width:0;
+    line-height:1.2;
+    overflow:hidden;
+  }
+  .page-title small{
+    display:block;
+    margin-top:3px;
+    font-size:9px;
+    letter-spacing:.6px;
+    color:var(--muted);
+    text-transform:none;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .page-title small{
+    display:none !important;
+  }
+  .clock{
+    font-size:10px;
+    padding:5px 9px;
+    letter-spacing:.5px;
+  }
+}
+/* ---- FIX 2: Real UID always single line ---- */
+.real-uid-cell{
+  white-space:nowrap !important;
+  word-break:normal !important;
+  font-family:var(--mono);
+}
+#histBody .real-uid-cell{
+  font-size:11px;
+  color:var(--txt);
+}
+.modal-v .real-uid-cell{
+  font-size:11.5px;
+  white-space:nowrap !important;
+  word-break:normal !important;
+}
+.batch-acc .real-uid-cell{
+  white-space:nowrap;
+}
+
+@media(max-width:600px){
+  .page-title{font-size:12px;letter-spacing:1px}
+  .page-title small{
+    display:none !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="scanline"></div>
+
+<div class="app">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-logo">
+        <img src="https://ik.imagekit.io/qkqtthays/Free%20Fire%20Icon%20-%20Colored%20-%20zonalogo.com.png?updatedAt=1787424423266" alt="logo">
+      </div>
+      <div class="brand-txt">
+        <b>FF TOKEN GENERATE</b>
+        <span>Powered by M. Sarker</span>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-label">Main</div>
+      <div class="nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item" data-view="token">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 7a5 5 0 1 0-4.6 7H9l-1.5 1.5L6 14l-1.5 1.5L3 14v-3h7.4A5 5 0 0 0 15 7z"/><circle cx="17" cy="7" r="1.2" fill="currentColor"/></svg>
+        Token Generator
+      </div>
+      <div class="nav-item" data-view="batch">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        Batch Generate
+      </div>
+      <div class="nav-item" data-view="history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        History
+      </div>
+      <div class="nav-item" data-view="regions">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>
+        Regions
+      </div>
+
+      <div class="nav-label">System</div>
+      <div class="nav-item" data-view="console">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></svg>
+        Live Console
+      </div>
+      <div class="nav-item" data-view="docs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 4h9l5 5v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M14 4v5h5M8 13h8M8 17h5"/></svg>
+        API Docs
+      </div>
+    </nav>
+
+    <div class="sidebar-foot">
+      <b>SECURE API</b><br>
+      <span style="opacity:.6">Flask · REST · JWT</span>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <div class="main">
+
+    <header class="topbar">
+      <button class="hamburger" id="hamburger">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="page-title" id="pageTitle">
+        Dashboard
+        <small>System overview &amp; live metrics</small>
+      </div>
+      <div class="topbar-right">
+        <diV class="status-stack">
+          <div class="status-pill" id="statusPill">
+            <span class="dot"></span>
+            <span id="statusTxt">CHECKING…</span>
+          </div>
+          <div class="clock" id="clock">--:--:-- --</div>
+        </diV>
+        <button class="icon-btn" id="themeBtn" title="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8L6 18M18 6l1.8-1.8"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ========== DASHBOARD ========== -->
+      <section class="view active" id="view-dashboard">
+        <div class="grid g-4" style="margin-bottom:16px">
+          <div class="card stat">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 17V9M10 17V5M16 17v-6M22 17H2"/></svg></div>
+            <div class="val" id="stTotal">0</div>
+            <div class="lbl">Total Requests</div>
+          </div>
+          <div class="card stat c-cyan">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div class="val" id="stSuccess">0</div>
+            <div class="lbl">Successful</div>
+          </div>
+          <div class="card stat c-red">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>
+            <div class="val" id="stFailed">0</div>
+            <div class="lbl">Failed</div>
+          </div>
+          <div class="card stat c-purple">
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
+            <div class="val" id="stAvg">0.00<span style="font-size:15px;color:var(--muted)">s</span></div>
+            <div class="lbl">Avg Per Response</div>
+          </div>
+        </div>
+
+        <div class="grid g-2" style="margin-bottom:16px">
+          <div class="card">
+            <div class="card-title">
+              <span class="bar"></span> Live API Health
+              <span class="right" id="healthTime">—</span>
+            </div>
+            <div id="healthBody">
+              <div class="res-row" style="animation-delay:.02s">
+                <span class="res-k">Status</span>
+                <span class="res-v" id="hStatus"><span class="badge-status ok">CHECKING</span></span>
+              </div>
+              <div class="res-row" style="animation-delay:.06s">
+                <span class="res-k">Latency</span>
+                <span class="res-v hl" id="hLatency">—</span>
+              </div>
+              <div class="res-row" style="animation-delay:.10s">
+                <span class="res-k">Uptime</span>
+                <span class="res-v" id="hUptime">—</span>
+              </div>
+              <div class="res-row" style="animation-delay:.12s">
+                <span class="res-k">Endpoint</span>
+                <span class="res-v mono-sm" id="hEndpoint">/token?uid=UID&amp;password=PASS</span>
+              </div>
+              <div class="res-row" style="animation-delay:.14s">
+                <span class="res-k">Example</span>
+                <span class="res-v mono-sm" id="hExample">—</span>
+              </div>
+            </div>
+            <div class="hint">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+              <span>Health endpoint auto-polls every <b>30s</b>. Uptime resets when the API goes offline.</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="bar"></span> Recent Activity
+              <span class="right" id="feedCount">0 entries</span>
+            </div>
+            <div class="feed" id="dashFeed">
+              <div class="result-empty" style="padding:34px 12px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+                <p>No activity yet.<br>Generate a token to populate the feed.</p>
+              </div>
+            </div>
+            <div class="feed-pagination" id="feedPagination"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><span class="bar"></span> Quick Actions</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn sm" onclick="showView('token')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              NEW TOKEN REQUEST
+            </button>
+            <button class="btn sm ghost" onclick="showView('batch')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+              BATCH GENERATE
+            </button>
+            <button class="btn sm ghost" id="btnHealth">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg>
+              RE-CHECK HEALTH
+            </button>
+            <button class="btn sm ghost" onclick="showView('console')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 9l3 3-3 3M13 15h4"/></svg>
+              OPEN CONSOLE
+            </button>
+            <button class="btn sm ghost" id="btnClearHistory">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+              CLEAR HISTORY
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== TOKEN GENERATOR (MERGED SINGLE CARD) ========== -->
+      <section class="view" id="view-token">
+        <div class="card no-hover">
+          <div class="merged-split">
+
+            <!-- LEFT: credentials + request -->
+            <div class="split-col">
+              <div class="section-title"><span class="bar"></span> Account Credentials</div>
+
+              <form id="tokenForm" autocomplete="off">
+                <div class="field">
+                  <label for="uid">Player UID</label>
+                  <div class="input-wrap has-pre">
+                    <input type="text" id="uid" placeholder="18097039025" spellcheck="false">
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="password">Account Password</label>
+                  <div class="input-wrap">
+                    <input type="password" id="password" placeholder="••••••••••" spellcheck="false">
+                    <button type="button" class="eye" id="eyeBtn" title="Show / Hide">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <button class="btn" type="submit" id="genBtn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 7a5 5 0 1 0-4.6 7H9l-1.5 1.5L6 14l-1.5 1.5L3 14v-3h7.4A5 5 0 0 0 15 7z"/></svg>
+                  <span id="genBtnTxt">GENERATE JWT TOKEN</span>
+                </button>
+              </form>
+              <div style="display:flex;gap:9px;margin-top:11px;flex-wrap:wrap">
+                <button type="button" class="btn sm ghost danger" id="btnClearForm">CLEAR FORM</button>
+              </div>
+              <div class="hint">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+                <span>This panel calls <span class="code-inline">GET /token?uid=…&amp;password=…</span> on your Flask API. Credentials are never stored on the client.</span>
+              </div>
+            </div>
+
+            <!-- RIGHT: response + jwt -->
+            <div class="split-col">
+              <div class="section-title">
+                <span class="bar c"></span> Response
+                <span class="right" id="resTime">—</span>
+              </div>
+
+              <div id="resultArea">
+                <div class="result-empty">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 7a5 5 0 1 0-4.6 7H9l-1.5 1.5L6 14l-1.5 1.5L3 14v-3h7.4A5 5 0 0 0 15 7z"/><circle cx="17" cy="7" r="1.2" fill="currentColor"/></svg>
+                  <p>No response yet.<br>Submit credentials to fetch a JWT token.</p>
+                </div>
+              </div>
+
+              <div id="jwtWrap" style="display:none;margin-top:16px">
+                <div class="section-title" style="margin-bottom:11px">
+                  <span class="bar c"></span>
+                  Decoded JWT
+                  <span class="jwt-chip ok" id="jwtAlgChip">SUCCESS</span>
+                </div>
+                <div class="jwt-box" id="jwtBox">—</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== BATCH GENERATE (MERGED SINGLE CARD) ========== -->
+      <section class="view" id="view-batch">
+        <div class="card no-hover">
+          <div class="merged-split">
+
+            <!-- LEFT: input + options + run -->
+            <div class="split-col">
+              <div class="section-title"><span class="bar"></span> Batch Input</div>
+
+              <div class="drop" id="dropZone">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 20h16"/></svg>
+                <b>Drop JSON file here or click to browse</b>
+                <span>Supported: .json, .txt (JSON content)</span>
+                <span class="fmt">[{"uid":"123","password":"pass"}, …]</span>
+              </div>
+              <input type="file" id="fileInput" accept=".json,.txt,application/json" style="display:none">
+
+              <div class="divider"></div>
+
+              <div class="field" style="margin-bottom:11px">
+                <label>Or paste JSON here</label>
+                <textarea id="batchPaste" placeholder='[
+  {"uid": "18097039025", "password": "pass1"},
+  {"uid": "18097039026", "password": "pass2"}
+]' spellcheck="false"></textarea>
+              </div>
+
+              <div style="display:flex;gap:9px;flex-wrap:wrap">
+                <button class="btn sm ghost" id="btnLoadPaste">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5L20 7"/></svg>
+                  LOAD FROM TEXT
+                </button>
+                <button class="btn sm ghost" id="btnLoadSample">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                  LOAD EXAMPLE
+                </button>
+
+                <!-- Download data dropdown -->
+                <div class="dropdown" id="ddDownload">
+                  <button class="btn sm ghost" data-dd-toggle>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v12M6 14l6 6 6-6M4 20h16"/></svg>
+                    DOWNLOAD DATA ▾
+                  </button>
+                  <div class="dropdown-menu">
+                    <div class="dropdown-item" data-dd-action="dl-full-json">JSON data <span class="dd-hint">all fields</span></div>
+                    <div class="dropdown-item" data-dd-action="dl-full-txt">TXT data <span class="dd-hint">plain text</span></div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" data-dd-action="dl-pair-json">JSON <span class="dd-hint">[uid, token, access]</span></div>
+                    <div class="dropdown-item" data-dd-action="dl-access-json">Access JSON <span class="dd-hint">[uid, access_token]</span></div>
+                    <div class="dropdown-item" data-dd-action="dl-token-json">Token JSON <span class="dd-hint">[uid, token]</span></div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" data-dd-action="dl-raw-access">RAW Access JSON <span class="dd-hint">[{access_token}]</span></div>
+                    <div class="dropdown-item" data-dd-action="dl-raw-token">RAW Token JSON <span class="dd-hint">[{token}]</span></div>
+                  </div>
+                </div>
+
+                <!-- Copy data dropdown -->
+                <div class="dropdown" id="ddCopy">
+                  <button class="btn sm ghost" data-dd-toggle>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                    COPY DATA ▾
+                  </button>
+                  <div class="dropdown-menu">
+                    <div class="dropdown-item" data-dd-action="cp-full-json">JSON data <span class="dd-hint">all fields</span></div>
+                    <div class="dropdown-item" data-dd-action="cp-full-txt">TXT data <span class="dd-hint">plain text</span></div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" data-dd-action="cp-pair-json">JSON <span class="dd-hint">[uid, token, access]</span></div>
+                    <div class="dropdown-item" data-dd-action="cp-access-json">Access JSON <span class="dd-hint">[uid, access_token]</span></div>
+                    <div class="dropdown-item" data-dd-action="cp-token-json">Token JSON <span class="dd-hint">[uid, token]</span></div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item" data-dd-action="cp-raw-access">RAW Access JSON <span class="dd-hint">[{access_token}]</span></div>
+                    <div class="dropdown-item" data-dd-action="cp-raw-token">RAW Token JSON <span class="dd-hint">[{token}]</span></div>
+                  </div>
+                </div>
+
+                <button class="btn sm ghost danger" id="btnClearBatch">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+                  CLEAR ALL
+                </button>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="section-title"><span class="bar"></span> Options</div>
+              <div class="field" style="margin-bottom:11px">
+                <label>Delay between requests (ms)</label>
+                <input type="number" id="batchDelay" value="250" min="0" max="10000" step="50">
+              </div>
+              <label class="chk" style="margin-bottom:9px">
+                <input type="checkbox" id="batchStopOnError">
+                <span>Stop batch on first error</span>
+              </label>
+              <label class="chk">
+                <input type="checkbox" id="batchAutoSave" checked>
+                <span>Auto-save results to history</span>
+              </label>
+
+              <div class="divider"></div>
+
+              <div style="display:flex;gap:9px;flex-wrap:wrap">
+                <button class="btn" id="btnRunBatch" style="flex:1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l14 8-14 8V4z"/></svg>
+                  <span id="btnRunBatchTxt">START BATCH</span>
+                </button>
+                <button class="btn sm ghost danger" id="btnAbortBatch" disabled style="width:auto">
+                  <span id="abortBtnTxt">STOP</span>
+                </button>
+              </div>
+
+              <div class="progress">
+                <div class="progress-bar" id="batchProgress"></div>
+              </div>
+              <div class="progress-meta">
+                <span id="batchStatus">Idle</span>
+                <span id="batchProgressTxt">0 / 0</span>
+              </div>
+            </div>
+
+            <!-- RIGHT: accounts + results + export -->
+            <div class="split-col">
+              <div class="section-title">
+                <span class="bar c"></span> Loaded Accounts
+                <span class="right" id="batchAccCount">0 accounts</span>
+              </div>
+              <div id="batchAccList" style="max-height:180px;overflow-y:auto;padding-right:4px">
+                <div class="result-empty" style="padding:24px 12px">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+                  <p>No accounts loaded.<br>Upload a JSON file or paste JSON.</p>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="section-title">
+                <span class="bar p"></span> Results
+                <span class="right" id="batchResCount">0 results</span>
+              </div>
+              <div id="batchResList" style="overflow-y:auto;padding-right:4px">
+                <div class="result-empty" style="padding:24px 12px">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg>
+                  <p>No results yet.<br>Run the batch to see output.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== HISTORY ========== -->
+      <section class="view" id="view-history">
+        <div class="card">
+          <div class="card-title">
+            <span class="bar"></span> Request History
+            <span class="right" id="histMeta">0 entries · stored locally</span>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th style="width:56px">#</th>
+                  <th style="width:130px">UID</th>
+                  <th style="width:90px">Status</th>
+                  <th style="width:70px">Time</th>
+                  <th style="width:130px">Real UID</th>
+                  <th style="width:150px">Access Token</th>
+                  <th style="width:180px">JWT Token</th>
+                  <th style="width:120px">Expires</th>
+                  <th style="width:130px">Timestamp</th>
+                  <th style="width:150px">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="histBody">
+                <tr class="empty-row"><td colspan="10">No history recorded yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="feed-pagination" id="histPagination"></div>
+        </div>
+      </section>
+
+      <!-- ========== REGIONS ========== -->
+      <section class="view" id="view-regions">
+        <div class="card">
+          <div class="card-title">
+            <span class="bar"></span> Supported Regions
+            <span class="right">11 server regions</span>
+          </div>
+          <div class="region-grid" id="regionGrid"></div>
+          <div class="hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <span>Region routing is resolved automatically by the Free Fire login server based on the account. This list is a reference of the configured regional endpoints.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== CONSOLE ========== -->
+      <section class="view" id="view-console">
+        <div class="card" style="padding:0;border:none;background:transparent">
+          <div class="terminal">
+            <div class="term-head">
+              <i></i><i></i><i></i>
+              <span>ff-api — live console</span>
+              <button class="btn sm ghost" id="btnClearTerm" style="margin-left:auto;padding:5px 11px">CLEAR</button>
+            </div>
+            <div class="term-body" id="termBody">
+              <div class="term-line info"><span class="p">$</span> console initialized<span class="cursor"></span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== DOCS ========== -->
+      <section class="view" id="view-docs">
+        <div class="grid g-2">
+          <div class="card">
+            <div class="card-title"><span class="bar"></span> GET /token</div>
+            <p style="color:var(--txt-dim);font-size:11.5px;margin-bottom:14px">
+              Generates a Free Fire JWT access token for a given account.
+            </p>
+            <div class="res-row"><span class="res-k">Method</span><span class="res-v hl">GET</span></div>
+            <div class="res-row"><span class="res-k">Path</span><span class="res-v">/token</span></div>
+            <div class="res-row"><span class="res-k">Param uid</span><span class="res-v">required — player UID</span></div>
+            <div class="res-row"><span class="res-k">Param password</span><span class="res-v">required — account password</span></div>
+            <div class="divider"></div>
+            <div class="section-title"><span class="bar"></span> Sample Response</div>
+            <div class="jwt-box">{
+  <span class="k">"access_token"</span>: <span class="s">"…"</span>,
+  <span class="k">"open_id"</span>: <span class="s">"…"</span>,
+  <span class="k">"real_uid"</span>: <span class="s">"…"</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"time"</span>: <span class="s">"1.23s"</span>,
+  <span class="k">"token"</span>: <span class="s">"eyJhbGciOi…"</span>
+}</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span class="bar" style="background:var(--cyan);box-shadow:0 0 10px var(--cyan)"></span> GET /health</div>
+            <p style="color:var(--txt-dim);font-size:11.5px;margin-bottom:14px">
+              Returns the API status, endpoint format and an example call.
+            </p>
+            <div class="res-row"><span class="res-k">Method</span><span class="res-v hl">GET</span></div>
+            <div class="res-row"><span class="res-k">Path</span><span class="res-v">/health</span></div>
+            <div class="res-row"><span class="res-k">Auth</span><span class="res-v">none</span></div>
+            <div class="divider"></div>
+            <div class="section-title"><span class="bar c"></span> Sample Response</div>
+            <div class="jwt-box">{
+  <span class="k">"status"</span>: <span class="s">"ok"</span>,
+  <span class="k">"endpoint"</span>: <span class="s">"/token?uid=UID&amp;password=PASS"</span>,
+  <span class="k">"example"</span>: <span class="s">"/token?uid=18097039025&amp;password=…"</span>
+}</div>
+            <div class="divider"></div>
+            <div class="section-title"><span class="bar"></span> Error Format</div>
+            <div class="jwt-box">{
+  <span class="k">"status"</span>: <span class="s">"error"</span>,
+  <span class="k">"error"</span>: <span class="s">"Failed to generate token: …"</span>
+}</div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- ================= FEED DETAILS MODAL ================= -->
+<div class="modal-overlay" id="feedModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title"><span class="bar"></span> Activity Details</div>
+      <button class="modal-close" id="feedModalClose" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="feedModalBody"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script data-cfasync="false">
+/* ============================================================
+   CONFIG
+   ============================================================ */
+const IS_FILE = location.protocol === 'file:';
+const API_BASE = IS_FILE ? 'http://localhost:12549' : '';
+const HEALTH_INTERVAL = 30000;
+const HISTORY_KEY = 'ffapi_history_v1';
+const LASTUID_KEY = 'ffapi_lastuid_v1';
+const THEME_KEY   = 'ffapi_theme_v1';
+const FEED_PER_PAGE = 5;
+const HIST_PER_PAGE = 15;
+
+/* ============================================================
+   REGION / SERVER CONFIG
+   ============================================================ */
+const REGION_CONFIG = {
+  "BD":  { server_url: "https://clientbp.ppmainecoonghj.com", release_version: "OB55" },
+  "IND": { server_url: "https://client.ind.freefiremobile.com", release_version: "OB55" },
+  "BR":  { server_url: "https://client.us.freefiremobile.com",  release_version: "OB55" },
+  "ME":  { server_url: "https://clientbp.ppmainecoonghj.com", release_version: "OB55" },
+  "VN":  { server_url: "https://clientbp.ppmainecoonghj.com", release_version: "OB55" },
+  "PK":  { server_url: "https://clientbp.ppmainecoonghj.com", release_version: "OB55" },
+  "SG":  { server_url: "https://clientbp.ppmainecoonghj.com", release_version: "OB55" },
+  "NA":  { server_url: "https://clientbp.ppmainecoonghj.com", release_version: "OB55" },
+  "ID":  { server_url: "https://clientbp.ppmainecoonghj.com", release_version: "OB55" },
+  "RU":  { server_url: "https://clientbp.ppmainecoonghj.com", release_version: "OB55" },
+  "TH":  { server_url: "https://clientbp.ppmainecoonghj.com", release_version: "OB55" }
+};
+
+/* ISO-2 country codes used for flag images */
+const SVR_MAP = {
+  "1":  { code: "BD",  name: "Bangladesh",    iso: "bd" },
+  "2":  { code: "IND", name: "India",         iso: "in" },
+  "3":  { code: "ME",  name: "Middle East",   iso: "ae" },
+  "4":  { code: "VN",  name: "Vietnam",       iso: "vn" },
+  "5":  { code: "PK",  name: "Pakistan",      iso: "pk" },
+  "6":  { code: "SG",  name: "Singapore",     iso: "sg" },
+  "7":  { code: "BR",  name: "Brazil",        iso: "br" },
+  "8":  { code: "NA",  name: "North America", iso: "us" },
+  "9":  { code: "ID",  name: "Indonesia",     iso: "id" },
+  "10": { code: "RU",  name: "Russia",        iso: "ru" },
+  "11": { code: "TH",  name: "Thailand",      iso: "th" }
+};
+
+function getRegionFromSvr(svr){
+  const s = String(svr || '').trim();
+  if (SVR_MAP[s]) return SVR_MAP[s];
+  return { code: 'UNKNOWN', name: 'Unknown', iso: '' };
+}
+
+/* Return an <img> tag for the flag (works on Windows + Mac + Linux) */
+function flagImg(iso, size){
+  size = size || 20;
+  if (!iso) return '<span style="display:inline-block;width:' + size + 'px"></span>';
+  return '<img src="https://flagcdn.com/w40/' + iso + '.png" ' +
+         'srcset="https://flagcdn.com/w80/' + iso + '.png 2x" ' +
+         'alt="' + iso.toUpperCase() + '" ' +
+         'onerror="this.style.display=\'none\'" ' +
+         'style="width:' + size + 'px;height:auto;border-radius:3px;vertical-align:middle;' +
+         'box-shadow:0 0 0 1px rgba(255,255,255,.08)">';
+}
+
+/* ============================================================
+   THEME
+   ============================================================ */
+(function initTheme(){
+  let t = 'dark';
+  try { t = localStorage.getItem(THEME_KEY) || 'dark'; } catch(e){}
+  document.documentElement.setAttribute('data-theme', t);
+})();
+
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem(THEME_KEY, next); } catch(e){}
+  toast('Switched to ' + next + ' mode', 'info');
+});
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let history = [];
+try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch(e){ history = []; }
+
+let lastReqUrl = '';
+let lastCurl   = '';
+let lastData   = null;
+let online     = false;
+let onlineSince = 0;
+let lastPingMs  = null;
+let feedPage    = 1;
+let histPage    = 1;
+let batchAccounts = [];
+let batchResults  = [];
+let batchRunning  = false;
+let batchAbort    = false;
+let abortBtnMode  = 'stop';   /* 'stop' | 'clear' */
+
+/* ============================================================
+   VIEW ROUTER
+   ============================================================ */
+const VIEW_META = {
+  dashboard: ['Dashboard', 'System overview & live metrics'],
+  token:     ['Token Generator', 'Fetch a Free Fire JWT access token'],
+  batch:     ['Batch Generate', 'Generate tokens for multiple accounts at once'],
+  history:   ['History', 'Locally stored request log'],
+  regions:   ['Regions', 'Supported Free Fire server regions'],
+  console:   ['Live Console', 'Real-time request & response stream'],
+  docs:      ['API Docs', 'Endpoint reference & payload schemas']
+};
+
+function showView(id){
+  document.querySelectorAll('.view').forEach(v =>
+    v.classList.toggle('active', v.id === 'view-' + id));
+  document.querySelectorAll('.nav-item').forEach(n =>
+    n.classList.toggle('active', n.dataset.view === id));
+
+  const meta = VIEW_META[id] || ['', ''];
+  document.getElementById('pageTitle').innerHTML =
+    meta[0] + '<small>' + meta[1] + '</small>';
+
+  if (window.innerWidth <= 900) document.getElementById('sidebar').classList.remove('open');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.querySelectorAll('.nav-item').forEach(n =>
+  n.addEventListener('click', () => showView(n.dataset.view)));
+
+document.getElementById('hamburger').addEventListener('click', () =>
+  document.getElementById('sidebar').classList.toggle('open'));
+
+/* ============================================================
+   TOASTS
+   ============================================================ */
+function toast(msg, type){
+  type = type || 'ok';
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = '<span class="bar"></span><span>' + escapeHtml(msg) + '</span>';
+  wrap.appendChild(el);
+  setTimeout(() => {
+    el.classList.add('out');
+    setTimeout(() => el.remove(), 300);
+  }, 3400);
+}
+
+/* ============================================================
+   UTILS
+   ============================================================ */
+function escapeHtml(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function escapeAttr(s){
+  return escapeHtml(s).replace(/\n/g,' ');
+}
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+function copyText(text){
+  if (navigator.clipboard && window.isSecureContext){
+    return navigator.clipboard.writeText(text);
+  }
+  return new Promise((res, rej) => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); res(); }
+    catch(e){ rej(e); }
+    finally { ta.remove(); }
+  });
+}
+
+/* Delegated copy buttons */
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('[data-copy]');
+  if (!btn) return;
+  const src = btn.getAttribute('data-copy');
+  let val = '';
+  if (src.startsWith('@')){
+    val = src.slice(1);
+  } else {
+    const el = document.getElementById(src);
+    val = el ? (el.textContent || el.value || '') : '';
+  }
+  if (!val || val === '—'){ toast('Nothing to copy', 'err'); return; }
+  copyText(val).then(() => {
+    btn.classList.add('done');
+    const old = btn.innerHTML;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>';
+    toast('Copied to clipboard', 'ok');
+    setTimeout(() => { btn.classList.remove('done'); btn.innerHTML = old; }, 1300);
+  }).catch(() => toast('Copy failed', 'err'));
+});
+
+function downloadFile(filename, content, mime){
+  const blob = new Blob([content], { type: mime || 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+/* ============================================================
+   CLOCK
+   ============================================================ */
+function tickClock(){
+  const d = new Date();
+  let h = d.getHours();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12; if (h === 0) h = 12;
+  const p = n => String(n).padStart(2,'0');
+  document.getElementById('clock').textContent =
+    p(h) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds()) + ' ' + ampm;
+}
+tickClock();
+setInterval(tickClock, 1000);
+
+/* ============================================================
+   TERMINAL
+   ============================================================ */
+const termBody = document.getElementById('termBody');
+let termInit = false;
+
+function termClear(){ termBody.innerHTML = ''; termInit = true; }
+function term(text, cls){
+  if (!termInit){ termBody.innerHTML = ''; termInit = true; }
+  const cur = termBody.querySelector('.cursor');
+  if (cur && cur.parentElement && cur.parentElement.classList.contains('term-line')){
+    cur.parentElement.remove();
+  }
+  const line = document.createElement('div');
+  line.className = 'term-line ' + (cls || '');
+  line.innerHTML = text;
+  termBody.appendChild(line);
+  const c = document.createElement('div');
+  c.className = 'term-line';
+  c.innerHTML = '<span class="p">$</span> <span class="cursor"></span>';
+  termBody.appendChild(c);
+  termBody.scrollTop = termBody.scrollHeight;
+}
+function ts(){
+  const d = new Date();
+  const p = n => String(n).padStart(2,'0');
+  return p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+}
+function tsFull(){
+  const d = new Date();
+  const p = n => String(n).padStart(2,'0');
+  return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate()) + ' ' + ts();
+}
+
+document.getElementById('btnClearTerm').addEventListener('click', () => {
+  termClear();
+  term('<span class="p">$</span> console cleared', 'info');
+});
+
+/* ============================================================
+   HEALTH CHECK + UPTIME
+   ============================================================ */
+function fmtUptime(ms){
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const ss = s % 60;
+  if (h > 0) return h + 'h ' + m + 'm ' + ss + 's';
+  if (m > 0) return m + 'm ' + ss + 's';
+  return ss + 's';
+}
+
+function refreshUptime(){
+  const el = document.getElementById('hUptime');
+  const pillTxt = document.getElementById('statusTxt');
+  if (!online || !onlineSince){
+    if (el) el.textContent = '—';
+    return;
+  }
+  const up = fmtUptime(Date.now() - onlineSince);
+  if (el) el.textContent = up;
+  if (pillTxt){
+    pillTxt.textContent = 'API ONLINE · ' + up;
+  }
+}
+setInterval(refreshUptime, 1000);
+
+async function checkHealth(silent){
+  const pill = document.getElementById('statusPill');
+  const txt  = document.getElementById('statusTxt');
+  const t0   = performance.now();
+
+  try {
+    const res = await fetch(API_BASE + '/health', { cache:'no-store' });
+    const ms  = Math.round(performance.now() - t0);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    const wasOnline = online;
+    online = true;
+    if (!wasOnline) onlineSince = Date.now();
+    lastPingMs = ms;
+    refreshUptime();
+
+    pill.classList.remove('bad'); pill.classList.add('ok');
+    txt.textContent = 'API ONLINE · ' + fmtUptime(Date.now() - onlineSince);
+
+    document.getElementById('hStatus').innerHTML =
+      '<span class="badge-status ok">● ONLINE</span>';
+    document.getElementById('hLatency').textContent = ms + ' ms';
+    document.getElementById('hEndpoint').textContent = data.endpoint || '/token?uid=UID&password=PASS';
+    document.getElementById('hExample').textContent  = data.example  || '—';
+    document.getElementById('healthTime').textContent = 'checked ' + ts();
+
+    if (!silent) toast('API is online (' + ms + 'ms)', 'ok');
+  }
+  catch (err){
+    online = false;
+    onlineSince = 0;
+    lastPingMs = null;
+    document.getElementById('hUptime').textContent = '—';
+    pill.classList.remove('ok'); pill.classList.add('bad');
+    txt.textContent = 'API OFFLINE';
+
+    document.getElementById('hStatus').innerHTML =
+      '<span class="badge-status err">● OFFLINE</span>';
+    document.getElementById('hLatency').textContent = '—';
+    document.getElementById('healthTime').textContent = 'failed ' + ts();
+
+    if (!silent) toast('API unreachable: ' + err.message, 'err');
+    term('<span class="p">GET</span> /health <span style="color:var(--red)">→ ERROR · ' + escapeHtml(err.message) + '</span>', 'err');
+  }
+}
+document.getElementById('btnHealth').addEventListener('click', () => checkHealth(false));
+
+/* ============================================================
+   STATS
+   ============================================================ */
+function computeStats(){
+  const total = history.length;
+  const success = history.filter(h => h.ok).length;
+  const failed = total - success;
+  const times = history.map(h => parseFloat(h.time)).filter(n => !isNaN(n));
+  const avg = times.length ? (times.reduce((a,b) => a+b, 0) / times.length) : 0;
+  return { total, success, failed, avg };
+}
+
+function setVal(id, v){
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.textContent !== String(v)){
+    el.textContent = v;
+    el.classList.remove('bump');
+    void el.offsetWidth;
+    el.classList.add('bump');
+  }
+}
+
+function renderStats(){
+  const s = computeStats();
+  setVal('stTotal', s.total);
+  setVal('stSuccess', s.success);
+  setVal('stFailed', s.failed);
+  const avgEl = document.getElementById('stAvg');
+  if (avgEl) avgEl.innerHTML =
+    s.avg.toFixed(2) + '<span style="font-size:15px;color:var(--muted)">s</span>';
+}
+
+/* ============================================================
+   FEED (PAGINATED + CLICKABLE)
+   ============================================================ */
+function renderFeed(){
+  const box = document.getElementById('dashFeed');
+  const total = history.length;
+  const totalPages = Math.max(1, Math.ceil(total / FEED_PER_PAGE));
+  if (feedPage > totalPages) feedPage = totalPages;
+  if (feedPage < 1) feedPage = 1;
+
+  document.getElementById('feedCount').textContent = total + ' entries';
+
+  if (!total){
+    box.innerHTML =
+      '<div class="result-empty" style="padding:34px 12px">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 7h16M4 12h16M4 17h10"/></svg>' +
+      '<p>No activity yet.<br>Generate a token to populate the feed.</p></div>';
+    document.getElementById('feedPagination').innerHTML = '';
+    return;
+  }
+
+  const start = (feedPage - 1) * FEED_PER_PAGE;
+  const items = history.slice(start, start + FEED_PER_PAGE);
+
+  box.innerHTML = items.map((h, i) => {
+    const globalIdx = start + i;
+    const ic = h.ok
+      ? '<div class="ic ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg></div>'
+      : '<div class="ic err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 9l-6 6M9 9l6 6"/></svg></div>';
+    return '<div class="feed-item clickable" data-idx="' + globalIdx + '" style="animation-delay:' + (i*0.045) + 's">' +
+      ic +
+      '<div class="tx"><b>' + escapeHtml(h.uid) + '</b>' +
+      '<span>' + (h.ok ? 'Token generated · ' + escapeHtml(h.time || '') : 'Failed · ' + escapeHtml(h.error || 'unknown')) + '</span></div>' +
+      '<div class="tm">' + escapeHtml(h.at) + '</div>' +
+    '</div>';
+  }).join('');
+
+  renderFeedPagination(totalPages);
+}
+
+function renderFeedPagination(totalPages){
+  const pag = document.getElementById('feedPagination');
+  if (totalPages <= 1){ pag.innerHTML = ''; return; }
+
+  let html = '';
+  html += '<button ' + (feedPage === 1 ? 'disabled' : '') + ' data-page="prev">‹</button>';
+
+  const maxShow = 5;
+  let startPage = Math.max(1, feedPage - 2);
+  let endPage = Math.min(totalPages, startPage + maxShow - 1);
+  if (endPage - startPage < maxShow - 1) startPage = Math.max(1, endPage - maxShow + 1);
+
+  if (startPage > 1){
+    html += '<button data-page="1">1</button>';
+    if (startPage > 2) html += '<span class="info">…</span>';
+  }
+
+  for (let p = startPage; p <= endPage; p++){
+    html += '<button ' + (p === feedPage ? 'class="active"' : '') +
+            ' data-page="' + p + '">' + p + '</button>';
+  }
+
+  if (endPage < totalPages){
+    if (endPage < totalPages - 1) html += '<span class="info">…</span>';
+    html += '<button data-page="' + totalPages + '">' + totalPages + '</button>';
+  }
+
+  html += '<button ' + (feedPage === totalPages ? 'disabled' : '') + ' data-page="next">›</button>';
+  html += '<span class="info">' + totalPages + ' pages</span>';
+
+  pag.innerHTML = html;
+}
+
+document.getElementById('feedPagination').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-page]');
+  if (!btn || btn.disabled) return;
+  const val = btn.getAttribute('data-page');
+  const totalPages = Math.max(1, Math.ceil(history.length / FEED_PER_PAGE));
+  if (val === 'prev') feedPage = Math.max(1, feedPage - 1);
+  else if (val === 'next') feedPage = Math.min(totalPages, feedPage + 1);
+  else feedPage = parseInt(val);
+  renderFeed();
+});
+
+/* Feed click -> modal */
+document.getElementById('dashFeed').addEventListener('click', e => {
+  const item = e.target.closest('.feed-item.clickable');
+  if (!item) return;
+  const idx = parseInt(item.getAttribute('data-idx'));
+  openFeedModal(idx);
+});
+
+/* Modal logic */
+function openFeedModal(idx){
+  const h = history[idx];
+  if (!h) return;
+
+  const body = document.getElementById('feedModalBody');
+  const statusHtml = h.ok
+    ? '<span class="badge-status ok">● SUCCESS</span>'
+    : '<span class="badge-status err">● FAILED</span>';
+
+  const rowHtml = (k, v, hl) =>
+    '<div class="modal-row"><span class="modal-k">' + k + '</span><span class="modal-v' + (hl ? ' hl' : '') + '">' + v + '</span></div>';
+
+  /* ---- Extract nickname + region from JWT ---- */
+  let nickname = '—';
+  let svrRaw   = '';
+  if (h.token){
+    try {
+      const parts   = h.token.split('.');
+      const header  = JSON.parse(b64urlDecode(parts[0]));
+      const payload = JSON.parse(b64urlDecode(parts[1]));
+      svrRaw = String(header.svr || '');
+      if (payload.nickname){
+        const r = tryDecodeField(payload.nickname);
+        if (r && !r.failed) nickname = r.value;
+      }
+    } catch(e){}
+  }
+
+  const region   = getRegionFromSvr(svrRaw);
+  const regionHtml = (typeof flagImg === 'function')
+    ? flagImg(region.iso, 18) + ' <span>' + escapeHtml(region.name) + '</span>'
+    : escapeHtml(region.name);
+
+  /* ---- Build rows ---- */
+  let html = '';
+  html += rowHtml('Status',   statusHtml);
+  html += rowHtml('UID',      escapeHtml(h.uid));
+  if (h.realUid) html += rowHtml('Real UID', '<span class="real-uid-cell">' + escapeHtml(h.realUid) + '</span>');
+  html += rowHtml('Nickname', escapeHtml(nickname), true);   /* highlighted */
+  html += rowHtml('Region',   regionHtml);
+  if (h.at) html += rowHtml('Timestamp', escapeHtml(h.at));
+  if (h.expires && h.expires !== '—') html += rowHtml('Expires', escapeHtml(h.expires));
+  if (h.accessToken) html += rowHtml('Access Token',
+    '<code>' + escapeHtml(h.accessToken) + '</code>' +
+    '<button class="copy-mini" data-copy="@' + escapeAttr(h.accessToken) + '" title="Copy" style="margin-left:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="12" height="12" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>');
+  if (h.token) html += rowHtml('JWT Token',
+    '<code style="word-break:break-all">' + escapeHtml(h.token) + '</code>' +
+    '<button class="copy-mini" data-copy="@' + escapeAttr(h.token) + '" title="Copy" style="margin-left:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="12" height="12" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>');
+  if (h.error) html += rowHtml('Error', '<span style="color:var(--red)">' + escapeHtml(h.error) + '</span>');
+
+  body.innerHTML = html;
+  document.getElementById('feedModal').classList.add('open');
+}
+
+document.getElementById('feedModalClose').addEventListener('click', () => {
+  document.getElementById('feedModal').classList.remove('open');
+});
+document.getElementById('feedModal').addEventListener('click', e => {
+  if (e.target.id === 'feedModal') document.getElementById('feedModal').classList.remove('open');
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('feedModal').classList.remove('open');
+});
+
+/* ============================================================
+   HISTORY TABLE
+   ============================================================ */
+function truncateMiddle(str, keep){
+  str = String(str || '');
+  keep = keep || 14;
+  if (str.length <= keep * 2 + 3) return str;
+  return str.slice(0, keep) + '…' + str.slice(-keep);
+}
+
+function renderHistory(){
+  const body = document.getElementById('histBody');
+  const total = history.length;
+  const totalPages = Math.max(1, Math.ceil(total / HIST_PER_PAGE));
+  if (histPage > totalPages) histPage = totalPages;
+  if (histPage < 1) histPage = 1;
+
+  document.getElementById('histMeta').textContent =
+    total + ' entries · stored locally · page ' + histPage + ' / ' + totalPages;
+
+  if (!total){
+    body.innerHTML = '<tr class="empty-row"><td colspan="10">No history recorded yet.</td></tr>';
+    const pag = document.getElementById('histPagination');
+    if (pag) pag.innerHTML = '';
+    return;
+  }
+
+  const start = (histPage - 1) * HIST_PER_PAGE;
+  const items = history.slice(start, start + HIST_PER_PAGE);
+
+  body.innerHTML = items.map((h, i) => {
+    const globalIdx = start + i;
+    const n = total - globalIdx;
+    const pill = h.ok
+      ? '<span class="pill ok">SUCCESS</span>'
+      : '<span class="pill err">FAILED</span>';
+    const accessShort = h.accessToken ? truncateMiddle(h.accessToken, 10) : '—';
+    const jwtShort    = h.token ? truncateMiddle(h.token, 12) : '—';
+    const expires     = h.expires || '—';
+
+    /* Real UID cell with copy button */
+    const realUidCell =
+      '<td class="real-uid-cell">' + escapeHtml(h.realUid || '—') +
+        (h.realUid ? '<button class="copy-mini" data-copy="@' + escapeAttr(h.realUid) + '" title="Copy Real UID" style="margin-left:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="12" height="12" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>' : '') +
+      '</td>';
+
+    return '<tr>' +
+      '<td>' + n + '</td>' +
+      '<td style="color:var(--txt)">' + escapeHtml(h.uid) + '</td>' +
+      '<td>' + pill + '</td>' +
+      '<td>' + escapeHtml(h.time || '—') + '</td>' +
+      realUidCell +
+      '<td><span class="cell-token" title="' + escapeAttr(h.accessToken || '') + '">' + escapeHtml(accessShort) + '</span>' +
+        (h.accessToken ? '<button class="copy-mini" data-copy="@' + escapeAttr(h.accessToken) + '" title="Copy access token" style="margin-left:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="12" height="12" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>' : '') +
+      '</td>' +
+      '<td><span class="cell-token" title="' + escapeAttr(h.token || '') + '">' + escapeHtml(jwtShort) + '</span>' +
+        (h.token ? '<button class="copy-mini" data-copy="@' + escapeAttr(h.token) + '" title="Copy JWT" style="margin-left:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="12" height="12" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>' : '') +
+      '</td>' +
+      '<td style="font-size:10.5px">' + escapeHtml(expires) + '</td>' +
+      '<td style="font-size:10.5px">' + escapeHtml(h.at || '—') + '</td>' +
+      '<td><div class="actions-cell">' +
+        '<button class="copy-mini" data-copy="@' + escapeAttr(JSON.stringify({uid:h.uid, realUid:h.realUid, token:h.token, accessToken:h.accessToken, ok:h.ok, time:h.time})) + '" title="Copy as JSON"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="12" height="12" stroke-width="2"><path d="M8 4h8l4 4v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M14 4v5h5"/></svg></button>' +
+        '<button class="copy-mini del" data-del-idx="' + globalIdx + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="12" height="12" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/><path d="M10 11v6M14 11v6"/></svg></button>' +
+      '</div></td>' +
+    '</tr>';
+  }).join('');
+
+  renderHistPagination(totalPages);
+}
+
+function renderHistPagination(totalPages){
+  const pag = document.getElementById('histPagination');
+  if (!pag) return;
+  if (totalPages <= 1){ pag.innerHTML = ''; return; }
+
+  let html = '';
+  html += '<button ' + (histPage === 1 ? 'disabled' : '') + ' data-hpage="prev">‹</button>';
+
+  const maxShow = 5;
+  let startPage = Math.max(1, histPage - 2);
+  let endPage = Math.min(totalPages, startPage + maxShow - 1);
+  if (endPage - startPage < maxShow - 1) startPage = Math.max(1, endPage - maxShow + 1);
+
+  if (startPage > 1){
+    html += '<button data-hpage="1">1</button>';
+    if (startPage > 2) html += '<span class="info">…</span>';
+  }
+
+  for (let p = startPage; p <= endPage; p++){
+    html += '<button ' + (p === histPage ? 'class="active"' : '') +
+            ' data-hpage="' + p + '">' + p + '</button>';
+  }
+
+  if (endPage < totalPages){
+    if (endPage < totalPages - 1) html += '<span class="info">…</span>';
+    html += '<button data-hpage="' + totalPages + '">' + totalPages + '</button>';
+  }
+
+  html += '<button ' + (histPage === totalPages ? 'disabled' : '') + ' data-hpage="next">›</button>';
+  html += '<span class="info">' + histPage + ' / ' + totalPages + '</span>';
+
+  pag.innerHTML = html;
+}
+
+document.getElementById('histPagination').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-hpage]');
+  if (!btn || btn.disabled) return;
+  const val = btn.getAttribute('data-hpage');
+  const totalPages = Math.max(1, Math.ceil(history.length / HIST_PER_PAGE));
+  if (val === 'prev') histPage = Math.max(1, histPage - 1);
+  else if (val === 'next') histPage = Math.min(totalPages, histPage + 1);
+  else histPage = parseInt(val);
+  renderHistory();
+});
+
+/* Delete handler (event delegation) */
+document.getElementById('histBody').addEventListener('click', e => {
+  const btn = e.target.closest('[data-del-idx]');
+  if (!btn) return;
+  const idx = parseInt(btn.getAttribute('data-del-idx'));
+  deleteHistoryItem(idx);
+});
+
+function deleteHistoryItem(idx){
+  if (isNaN(idx) || idx < 0 || idx >= history.length) return;
+  const removed = history[idx];
+  history.splice(idx, 1);
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch(e){}
+
+  /* If current page is now empty, go back one page */
+  const totalPages = Math.max(1, Math.ceil(history.length / HIST_PER_PAGE));
+  if (histPage > totalPages) histPage = totalPages;
+
+  renderStats(); renderFeed(); renderHistory();
+  toast('Deleted · ' + (removed.uid || 'entry'), 'ok');
+  term('<span class="p">SYS</span> history entry deleted · uid=' + escapeHtml(removed.uid || ''), 'warn');
+}
+
+function pushHistory(entry){
+  history.unshift(entry);
+
+  /* ⭐ Expired token গুলো এখনই সরিয়ে ফেলি */
+  purgeExpiredHistory(true);
+
+  /* ⭐ Save করার চেষ্টা — storage full হলে oldest entries ছাড়ো */
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch(e){
+    /* Storage full — oldest 20% entries ছাড়ো যাতে জায়গা হয় */
+    const dropCount = Math.max(50, Math.floor(history.length * 0.2));
+    history = history.slice(0, history.length - dropCount);
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch(e2){}
+    toast('Storage full — ' + dropCount + ' oldest entries removed', 'warn');
+    term('<span class="p">SYS</span> storage full, dropped ' + dropCount + ' oldest entries', 'warn');
+  }
+
+  renderStats(); renderFeed(); renderHistory();
+}
+
+document.getElementById('btnClearHistory').addEventListener('click', () => {
+  if (!history.length){ toast('History already empty', 'err'); return; }
+  history = [];
+  try { localStorage.removeItem(HISTORY_KEY); } catch(e){}
+  feedPage = 1;
+  histPage = 1;
+  renderStats(); renderFeed(); renderHistory();
+  toast('History cleared', 'ok');
+  term('<span class="p">SYS</span> local history cleared', 'warn');
+});
+
+/* ============================================================
+   RESULT RENDERING (single)
+   ============================================================ */
+function row(key, valueId, value, opts){
+  opts = opts || {};
+  const cls = 'res-v' + (opts.mono ? ' mono-sm' : '') + (opts.hl ? ' hl' : '');
+  return '<div class="res-row" style="animation-delay:' + (opts.d || 0) + 's">' +
+    '<span class="res-k">' + key + '</span>' +
+    '<span class="' + cls + '" id="' + valueId + '">' + escapeHtml(value) + '</span>' +
+    (opts.nocopy ? '' :
+      '<button class="copy" data-copy="' + valueId + '" title="Copy">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
+      '</button>') +
+  '</div>';
+}
+
+/* Returns unix expiry (seconds) or null if unknown */
+function getJwtExpUnix(token){
+  if (!token || typeof token !== 'string') return null;
+  try {
+    const payload = JSON.parse(b64urlDecode(token.split('.')[1]));
+    if (payload && typeof payload.exp === 'number') return payload.exp;
+  } catch(e){}
+  return null;
+}
+
+/* Returns a human-readable expiry string (locale formatted) or '—' */
+function getJwtExpiry(token){
+  try {
+    const payload = JSON.parse(b64urlDecode(token.split('.')[1]));
+    if (payload && payload.exp){
+      const d = new Date(payload.exp * 1000);
+      return d.toLocaleString();
+    }
+  } catch(e){}
+  return '—';
+}
+
+/* Remove expired tokens from history. Returns number removed. */
+function purgeExpiredHistory(silent){
+  const nowSec = Math.floor(Date.now() / 1000);
+  const before = history.length;
+
+  history = history.filter(h => {
+
+    /* ---- Failed entry (কোনো token নেই) ---- */
+    if (!h.ok || !h.token){
+      /* Failed entry কে ৭ দিন রাখি, তারপর ছাড়ি */
+      if (h.ts && (Date.now() - h.ts) > 7 * 24 * 60 * 60 * 1000) return false;
+      return true;
+    }
+
+    /* ---- JWT exp বের করি ---- */
+    let exp = h.expUnix;
+    if (typeof exp !== 'number') exp = getJwtExpUnix(h.token);
+
+    /* exp না পাওয়া গেলে → token টা malformed/পার্স করা যায়নি
+       সেক্ষেত্রে ৩০ দিন রাখি, তারপর ছাড়ি (safety) */
+    if (typeof exp !== 'number'){
+      if (h.ts && (Date.now() - h.ts) > 30 * 24 * 60 * 60 * 1000) return false;
+      return true;
+    }
+
+    /* ---- exp পেলে: এখনো valid কিনা চেক ---- */
+    return exp > nowSec;   // true = রাখো, false = ছাড়ো
+  });
+
+  const removed = before - history.length;
+
+  if (removed > 0){
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch(e){}
+    renderStats(); renderFeed(); renderHistory();
+
+    if (!silent){
+      toast(removed + ' expired entry removed', 'info');
+      term('<span class="p">SYS</span> purged ' + removed + ' expired entr' + (removed === 1 ? 'y' : 'ies'), 'warn');
+    }
+  }
+  return removed;
+}
+
+function renderResult(data){
+  const area = document.getElementById('resultArea');
+  document.getElementById('resTime').textContent = 'received ' + ts();
+
+  /* Extract nickname + svr from JWT */
+  let nickname = '—';
+  let svrRaw   = '';
+  if (data.token){
+    try {
+      const parts   = data.token.split('.');
+      const header  = JSON.parse(b64urlDecode(parts[0]));
+      const payload = JSON.parse(b64urlDecode(parts[1]));
+      svrRaw = String(header.svr || '');
+      if (payload.nickname){
+        const r = tryDecodeField(payload.nickname);
+        if (r && !r.failed) nickname = r.value;
+      }
+    } catch(e){}
+  }
+
+  const region     = getRegionFromSvr(svrRaw);
+  const regionText = flagImg(region.iso, 20) + ' ' + region.name;
+
+  const html =
+    row('Status',   'rStatus', 'SUCCESS', { hl:true, d:0.02, nocopy:true }) +
+    row('Real UID', 'rUid',    data.real_uid || '—', { hl:true, d:0.06 }) +
+    row('Nickname', 'rNick',   nickname,        { hl:true, d:0.08 }) +
+    '<div class="res-row" style="animation-delay:.14s">' +
+      '<span class="res-k">Region</span>' +
+      '<span class="res-v" id="rRegion" style="display:flex;align-items:center;gap:8px">' +
+        flagImg(region.iso, 20) + '<span>' + escapeHtml(region.name) + '</span>' +
+      '</span>' +
+      '<button class="copy" data-copy="' + escapeAttr(region.name) + '" title="Copy">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>' +
+      '</button>' +
+    '</div>' +
+    row('Open ID',  'rOpenId', data.open_id  || '—', { mono:true, d:0.10 }) +
+    row('Access Token', 'rAccess', data.access_token || '—', { mono:true, d:0.18 }) +
+    row('JWT Token',    'rToken',  data.token        || '—', { mono:true, d:0.22 }) +
+    row('Expires',      'rExp',    data.token ? getJwtExpiry(data.token) : '—', { mono:true, d:0.26 });
+
+  area.innerHTML = html;
+  const st = document.getElementById('rStatus');
+  if (st) st.innerHTML = '<span class="badge-status ok">● SUCCESS</span>';
+
+  renderJwt(data.token);
+}
+
+function renderError(msg){
+  const area = document.getElementById('resultArea');
+  document.getElementById('resTime').textContent = 'failed ' + ts();
+  area.innerHTML =
+    row('Status', 'rStatus', 'FAILED', { d:0.02, nocopy:true }) +
+    row('Error',  'rErr', msg, { d:0.06, hl:false });
+  const st = document.getElementById('rStatus');
+  if (st) st.innerHTML = '<span class="badge-status err">● FAILED</span>';
+  document.getElementById('jwtWrap').style.display = 'none';
+}
+
+/* ---- Base64 utils ---- */
+function b64urlDecode(str){
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4) str += '=';
+  const bin = atob(str);
+  try {
+    return decodeURIComponent(
+      Array.prototype.map.call(bin, c =>
+        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      ).join('')
+    );
+  } catch(e){
+    return bin;
+  }
+}
+
+/* ---- Free Fire obfuscation key (verified: 12 bytes) ---- */
+const FF_XOR_KEY = [
+  0x31,0x65,0x35,0x38,0x39,0x38,
+  0x63,0x63,0x62,0x38,0x64,0x66
+]; // "1e5898ccb8df"
+
+function isReadableText(str){
+  if (!str || !str.length) return false;
+  let ok = 0;
+  for (let i = 0; i < str.length; i++){
+    const c = str.charCodeAt(i);
+    if ((c >= 32 && c < 127) || c === 9 || c === 10 || c === 13) ok++;
+    else if (c > 0x80 && c < 0x3000) ok += 0.6;
+  }
+  return ok / str.length >= 0.98;
+}
+
+/* Base64 → XOR(ff) decode. Returns { value, method, failed? } or null. */
+function tryDecodeField(val){
+  if (typeof val !== 'string') return null;
+  if (val.length < 8) return null;
+  if (!/^[A-Za-z0-9+/=_-]+$/.test(val)) return null;
+
+  let raw = null;
+  try {
+    let s = val.replace(/-/g,'+').replace(/_/g,'/');
+    while (s.length % 4) s += '=';
+    raw = atob(s);
+  } catch(e){
+    return null;
+  }
+  if (!raw || !raw.length) return null;
+
+  if (isReadableText(raw)){
+    return { value: raw, method: 'base64' };
+  }
+
+  let xored = '';
+  for (let i = 0; i < raw.length; i++){
+    xored += String.fromCharCode(
+      raw.charCodeAt(i) ^ FF_XOR_KEY[i % FF_XOR_KEY.length]
+    );
+  }
+  if (isReadableText(xored)){
+    return { value: xored, method: 'base64 + xor(ff)' };
+  }
+
+  return { value: val, method: 'unresolved', failed: true };
+}
+
+function highlightJson(obj){
+  let json = JSON.stringify(obj, null, 2);
+  json = escapeHtml(json);
+  return json
+    .replace(/&quot;([^&]*?)&quot;(\s*:)/g, '<span class="k">"$1"</span>$2')
+    .replace(/:\s*&quot;([^&]*?)&quot;/g, ': <span class="s">"$1"</span>')
+    .replace(/:\s*(-?\d+\.?\d*)/g, ': <span class="n">$1</span>')
+    .replace(/:\s*(true|false|null)/g, ': <span class="b">$1</span>');
+}
+
+function renderJwt(token){
+  const wrap = document.getElementById('jwtWrap');
+  const box  = document.getElementById('jwtBox');
+  const chip = document.getElementById('jwtAlgChip');
+
+  if (!token || typeof token !== 'string' || token.split('.').length < 2){
+    wrap.style.display = 'none';
+    return;
+  }
+  try {
+    const parts     = token.split('.');
+    const header    = JSON.parse(b64urlDecode(parts[0]));
+    const payload   = JSON.parse(b64urlDecode(parts[1]));
+    const signature = parts[2] || '';
+
+    if (chip) chip.innerHTML =
+      '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3" style="vertical-align:-1px;margin-right:3px"><path d="M20 6L9 17l-5-5"/></svg>SUCCESS';
+
+    let html  = '<span class="c">// HEADER</span>\n' + highlightJson(header);
+    html += '\n\n<span class="c">// PAYLOAD</span>\n' + highlightJson(payload);
+    html += '\n\n<span class="c">// SIGNATURE</span>\n' + highlightJson({ signature: signature });
+
+    box.innerHTML = html;
+    wrap.style.display = 'block';
+  } catch(e){
+    wrap.style.display = 'none';
+  }
+}
+
+/* ============================================================
+   SINGLE TOKEN FORM
+   ============================================================ */
+const uidInput = document.getElementById('uid');
+const pwInput  = document.getElementById('password');
+const genBtn   = document.getElementById('genBtn');
+const genTxt   = document.getElementById('genBtnTxt');
+
+document.getElementById('eyeBtn').addEventListener('click', function(){
+  const isPw = pwInput.type === 'password';
+  pwInput.type = isPw ? 'text' : 'password';
+  this.style.color = isPw ? 'var(--green)' : '';
+});
+
+function updateReqUrl(){
+  const box = document.getElementById('reqUrlBox');   /* null-safe */
+  const uid = uidInput.value.trim();
+  const pw  = pwInput.value;
+
+  if (!uid && !pw){
+    if (box) box.textContent = '/token?uid=…&password=…';
+    lastReqUrl = ''; lastCurl = '';
+    return;
+  }
+
+  const q = '/token?uid=' + encodeURIComponent(uid) + '&password=' + encodeURIComponent(pw ? '••••••' : '');
+  if (box) box.textContent = q;
+
+  const real = API_BASE + '/token?uid=' + encodeURIComponent(uid) + '&password=' + encodeURIComponent(pw);
+  lastReqUrl = real;
+  lastCurl = "curl -X GET \"" + real + "\" \\\n  -H \"Accept: application/json\"";
+}
+uidInput.addEventListener('input', updateReqUrl);
+pwInput.addEventListener('input', updateReqUrl);
+updateReqUrl();
+
+/* ---- Optional buttons — null-safe (may not exist in merged layout) ---- */
+(function(){
+  const _btnCopyUrl = document.getElementById('btnCopyUrl');
+  if (_btnCopyUrl) _btnCopyUrl.addEventListener('click', () => {
+    if (!lastReqUrl){ toast('Fill credentials first', 'err'); return; }
+    copyText(lastReqUrl).then(() => toast('URL copied', 'ok')).catch(() => toast('Copy failed','err'));
+  });
+
+  const _btnCopyCurl = document.getElementById('btnCopyCurl');
+  if (_btnCopyCurl) _btnCopyCurl.addEventListener('click', () => {
+    if (!lastCurl){ toast('Fill credentials first', 'err'); return; }
+    copyText(lastCurl).then(() => toast('cURL copied', 'ok')).catch(() => toast('Copy failed','err'));
+  });
+
+  const _btnCopyJson = document.getElementById('btnCopyJson');
+  if (_btnCopyJson) _btnCopyJson.addEventListener('click', () => {
+    if (!lastData){
+      if (!uidInput.value || !pwInput.value){ toast('Fill credentials first', 'err'); return; }
+      const obj = { uid: uidInput.value.trim(), password: pwInput.value };
+      copyText(JSON.stringify(obj, null, 2))
+        .then(() => toast('JSON copied', 'ok')).catch(() => toast('Copy failed','err'));
+      return;
+    }
+    const obj = {
+      uid: uidInput.value.trim(),
+      password: pwInput.value,
+      real_uid: lastData.real_uid || '',
+      open_id:  lastData.open_id  || '',
+      access_token: lastData.access_token || '',
+      token: lastData.token || '',
+      time: lastData.time || '',
+      status: lastData.status || ''
+    };
+    copyText(JSON.stringify(obj, null, 2))
+      .then(() => toast('JSON copied', 'ok')).catch(() => toast('Copy failed','err'));
+  });
+
+  const _btnClearForm = document.getElementById('btnClearForm');
+  if (_btnClearForm) _btnClearForm.addEventListener('click', () => {
+    uidInput.value = '';
+    pwInput.value = '';
+    lastData = null;
+    lastReqUrl = '';
+    lastCurl = '';
+    updateReqUrl();
+
+    document.getElementById('resultArea').innerHTML =
+      '<div class="result-empty">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 7a5 5 0 1 0-4.6 7H9l-1.5 1.5L6 14l-1.5 1.5L3 14v-3h7.4A5 5 0 0 0 15 7z"/><circle cx="17" cy="7" r="1.2" fill="currentColor"/></svg>' +
+      '<p>No response yet.<br>Submit credentials to fetch a JWT token.</p></div>';
+
+    document.getElementById('jwtWrap').style.display = 'none';
+    document.getElementById('resTime').textContent = '—';
+
+    try { localStorage.removeItem(LASTUID_KEY); } catch(e){}
+
+    toast('Form cleared', 'ok');
+    uidInput.focus();
+  });
+})();
+
+function setLoading(on){
+  genBtn.disabled = on;
+  genTxt.textContent = on ? 'GENERATING…' : 'GENERATE JWT TOKEN';
+  let sp = genBtn.querySelector('.spinner');
+  if (on){
+    if (!sp){
+      sp = document.createElement('span');
+      sp.className = 'spinner';
+      genBtn.insertBefore(sp, genBtn.firstChild);
+    }
+  } else if (sp){
+    sp.remove();
+  }
+}
+
+document.getElementById('tokenForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+
+  const uid = uidInput.value.trim();
+  const pw  = pwInput.value;
+
+  if (!uid || !pw){
+    toast('UID and Password are both required', 'err');
+    renderError('Both uid and password parameters are required');
+    term('<span class="p">ERR</span> missing uid or password', 'err');
+    return;
+  }
+
+  setLoading(true);
+  const t0 = performance.now();
+
+  const url = API_BASE + '/token?uid=' + encodeURIComponent(uid) + '&password=' + encodeURIComponent(pw);
+  term('<span class="p">GET</span> /token?uid=' + escapeHtml(uid) + '&password=••••', 'info');
+
+  try {
+    const res  = await fetch(url, { method:'GET', headers:{ 'Accept':'application/json' } });
+    const ms   = Math.round(performance.now() - t0);
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok || data.status === 'error'){
+      const msg = data.error || ('HTTP ' + res.status);
+      lastData = null;
+      renderError(msg);
+      pushHistory({
+        uid: uid, ok: false, error: msg,
+        time: ((ms/1000).toFixed(2) + 's'),
+        at: tsFull(), ts: Date.now(),          // ⭐ যোগ করো
+        realUid:'', token:'', accessToken:'', expires:'—'
+      });
+      toast('Request failed', 'err');
+      term('<span class="p">ERR</span> ' + escapeHtml(msg), 'err');
+      return;
+    }
+
+    lastData = data;
+    renderResult(data);
+    pushHistory({
+      uid: uid, ok: true,
+      time: data.time || ((ms/1000).toFixed(2) + 's'),
+      realUid: data.real_uid || '',
+      token: data.token || '',
+      accessToken: data.access_token || '',
+      expires: data.token ? getJwtExpiry(data.token) : '—',
+      expUnix: data.token ? getJwtExpUnix(data.token) : null,
+      at: tsFull(),
+      ts: Date.now()                          // ⭐ যোগ করো
+    });
+
+    toast('Token generated successfully', 'ok');
+    term('<span class="p">OK </span> account_id=' + escapeHtml(data.real_uid || '—') +
+         ' · ' + escapeHtml(data.time || '') , 'ok');
+    term('<span class="p">JWT</span> ' + escapeHtml(String(data.token || '').slice(0, 48)) + '…', 'info');
+  }
+  catch (err){
+    lastData = null;
+    renderError(err.message);
+    pushHistory({
+      uid: uid, ok:false, error: err.message,
+      time: '—', at: tsFull(), realUid:'', token:'', accessToken:'', expires:'—'
+    });
+    toast('Network error: ' + err.message, 'err');
+    term('<span class="p">ERR</span> ' + escapeHtml(err.message), 'err');
+  }
+  finally {
+    setLoading(false);
+  }
+});
+
+/* ============================================================
+   BATCH GENERATE
+   ============================================================ */
+const dropZone    = document.getElementById('dropZone');
+const fileInput   = document.getElementById('fileInput');
+const batchPaste  = document.getElementById('batchPaste');
+const batchAccList= document.getElementById('batchAccList');
+const batchResList= document.getElementById('batchResList');
+
+dropZone.addEventListener('click', () => fileInput.click());
+['dragenter','dragover'].forEach(ev =>
+  dropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dropZone.classList.add('over'); }));
+['dragleave','drop'].forEach(ev =>
+  dropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('over'); }));
+dropZone.addEventListener('drop', e => {
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) handleBatchFile(f);
+});
+fileInput.addEventListener('change', e => {
+  const f = e.target.files && e.target.files[0];
+  if (f) handleBatchFile(f);
+  fileInput.value = '';
+});
+
+function handleBatchFile(file){
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const text = String(ev.target.result || '');
+      const accs = parseBatchAccounts(text);
+      batchAccounts = accs;
+      batchResults = [];
+      renderBatchAccounts();
+      renderBatchResults();
+      updateBatchProgress(0, batchAccounts.length);
+      toast('Loaded ' + accs.length + ' accounts from ' + file.name, 'ok');
+      term('<span class="p">FILE</span> ' + escapeHtml(file.name) + ' → ' + accs.length + ' accounts', 'info');
+    } catch(err){
+      toast('Invalid file: ' + err.message, 'err');
+      term('<span class="p">ERR </span> ' + escapeHtml(err.message), 'err');
+    }
+  };
+  reader.onerror = () => toast('Could not read file', 'err');
+  reader.readAsText(file);
+}
+
+function parseBatchAccounts(text){
+  let parsed;
+  try { parsed = JSON.parse(text); }
+  catch(e){ throw new Error('Invalid JSON'); }
+
+  let arr = null;
+  if (Array.isArray(parsed)) arr = parsed;
+  else if (parsed && Array.isArray(parsed.accounts)) arr = parsed.accounts;
+  else if (parsed && Array.isArray(parsed.data)) arr = parsed.data;
+  else if (parsed && (parsed.uid || parsed.username) && (parsed.password || parsed.pass)) arr = [parsed];
+  else throw new Error('Unsupported JSON structure');
+
+  const valid = arr
+    .filter(a => a && (a.uid || a.username || a.user) && (a.password || a.pass || a.pw))
+    .map(a => ({
+      uid: String(a.uid || a.username || a.user).trim(),
+      password: String(a.password || a.pass || a.pw).trim()
+    }))
+    .filter(a => a.uid && a.password);
+
+  if (!valid.length) throw new Error('No valid accounts found');
+  return valid;
+}
+
+document.getElementById('btnLoadPaste').addEventListener('click', () => {
+  const text = batchPaste.value.trim();
+  if (!text){ toast('Paste JSON first', 'err'); return; }
+  try {
+    const accs = parseBatchAccounts(text);
+    batchAccounts = accs;
+    batchResults = [];
+    renderBatchAccounts();
+    renderBatchResults();
+    updateBatchProgress(0, batchAccounts.length);
+    toast('Loaded ' + accs.length + ' accounts', 'ok');
+    term('<span class="p">PASTE</span> ' + accs.length + ' accounts loaded', 'info');
+  } catch(err){
+    toast('Invalid JSON: ' + err.message, 'err');
+    term('<span class="p">ERR </span> ' + escapeHtml(err.message), 'err');
+  }
+});
+
+document.getElementById('btnLoadSample').addEventListener('click', () => {
+  const sample = [
+    { uid: '18097039025', password: 'sample_pass_1' },
+    { uid: '18097039026', password: 'sample_pass_2' },
+    { uid: '18097039027', password: 'sample_pass_3' }
+  ];
+  batchPaste.value = JSON.stringify(sample, null, 2);
+  batchAccounts = sample;
+  batchResults = [];
+  renderBatchAccounts();
+  renderBatchResults();
+  updateBatchProgress(0, batchAccounts.length);
+  toast('Sample loaded', 'ok');
+});
+
+document.getElementById('btnClearBatch').addEventListener('click', () => {
+  if (batchRunning){ toast('Cannot clear while running', 'err'); return; }
+  batchAccounts = [];
+  batchResults = [];
+  batchPaste.value = '';
+  renderBatchAccounts();
+  renderBatchResults();
+  updateBatchProgress(0, 0);
+  document.getElementById('batchStatus').textContent = 'Idle';
+  toast('Batch cleared', 'ok');
+});
+
+function renderBatchAccounts(){
+  document.getElementById('batchAccCount').textContent = batchAccounts.length + ' accounts';
+
+  if (!batchAccounts.length){
+    batchAccList.innerHTML =
+      '<div class="result-empty" style="padding:24px 12px">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 7h16M4 12h16M4 17h10"/></svg>' +
+      '<p>No accounts loaded.<br>Upload a JSON file or paste JSON.</p></div>';
+    return;
+  }
+
+  batchAccList.innerHTML = batchAccounts.map((a, i) => {
+    const res = batchResults[i];
+    let st = '<span class="st wait">PENDING</span>';
+    if (res){
+      if (res.ok) st = '<span class="st ok">OK</span>';
+      else st = '<span class="st err">FAILED</span>';
+    } else if (batchRunning && i === batchResults.length){
+      st = '<span class="st run">RUNNING</span>';
+    }
+    return '<div class="batch-acc">' +
+      '<span class="n">' + (i+1) + '</span>' +
+      '<span class="u">' + escapeHtml(a.uid) + '</span>' +
+      st +
+    '</div>';
+  }).join('');
+}
+
+function renderBatchResults(){
+  document.getElementById('batchResCount').textContent = batchResults.length + ' results';
+
+  if (!batchResults.length){
+    batchResList.innerHTML =
+      '<div class="result-empty" style="padding:24px 12px">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg>' +
+      '<p>No results yet.<br>Run the batch to see output.</p></div>';
+    return;
+  }
+
+  batchResList.innerHTML = batchResults.map((r, i) => {
+    const st = r.ok
+      ? '<span class="st ok">OK</span>'
+      : '<span class="st err">FAIL</span>';
+    const meta = r.ok
+      ? ('<span class="real-uid-cell">' + escapeHtml(r.realUid || '') + '</span> · ' + escapeHtml(r.time || ''))
+      : escapeHtml(r.error || 'unknown');
+    return '<div class="batch-acc">' +
+      '<span class="n">' + (i+1) + '</span>' +
+      '<span class="u">' + escapeHtml(r.uid) + '<br><span style="font-size:9.5px;color:var(--muted)">' + meta + '</span></span>' +
+      st +
+    '</div>';
+  }).join('');
+}
+
+function updateBatchProgress(done, total){
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  document.getElementById('batchProgress').style.width = pct + '%';
+  document.getElementById('batchProgressTxt').textContent = done + ' / ' + total;
+}
+
+async function generateOne(uid, password){
+  const t0 = performance.now();
+  const url = API_BASE + '/token?uid=' + encodeURIComponent(uid) + '&password=' + encodeURIComponent(password);
+  try {
+    const res = await fetch(url, { method:'GET', headers:{ 'Accept':'application/json' } });
+    const ms = Math.round(performance.now() - t0);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.status === 'error'){
+      return { ok:false, error: data.error || ('HTTP ' + res.status), time: ((ms/1000).toFixed(2)+'s') };
+    }
+    return {
+      ok: true,
+      realUid: data.real_uid || '',
+      openId: data.open_id || '',
+      accessToken: data.access_token || '',
+      token: data.token || '',
+      time: data.time || ((ms/1000).toFixed(2)+'s'),
+      expires: data.token ? getJwtExpiry(data.token) : '—'
+    };
+  } catch(err){
+    return { ok:false, error: err.message, time: '—' };
+  }
+}
+
+document.getElementById('btnRunBatch').addEventListener('click', runBatch);
+document.getElementById('btnAbortBatch').addEventListener('click', () => {
+  const btn = document.getElementById('btnAbortBatch');
+  const txt = document.getElementById('abortBtnTxt');
+
+  if (abortBtnMode === 'stop'){
+    if (batchRunning){
+      batchAbort = true;
+      toast('Stopping batch…', 'info');
+    }
+    return;
+  }
+
+  /* CLEAR mode: reset results only (accounts remain loaded) */
+  if (batchRunning){
+    toast('Cannot clear while running', 'err');
+    return;
+  }
+
+  batchResults = [];
+  renderBatchResults();
+  updateBatchProgress(0, 0);
+  document.getElementById('batchStatus').textContent = 'Idle';
+
+  /* Reset button back to disabled STOP mode */
+  abortBtnMode = 'stop';
+  btn.disabled = true;
+  btn.className = 'btn sm ghost danger';
+  txt.textContent = 'STOP';
+
+  toast('Batch results cleared', 'ok');
+  term('<span class="p">SYS</span> batch results cleared', 'warn');
+});
+
+async function runBatch(){
+  if (batchRunning) return;
+  if (!batchAccounts.length){ toast('No accounts loaded', 'err'); return; }
+
+  batchRunning = true;
+  batchAbort = false;
+  batchResults = [];
+  renderBatchResults();
+
+  const delay = Math.max(0, parseInt(document.getElementById('batchDelay').value) || 0);
+  const stopOnError = document.getElementById('batchStopOnError').checked;
+  const autoSave = document.getElementById('batchAutoSave').checked;
+
+  const btn = document.getElementById('btnRunBatch');
+  const btnTxt = document.getElementById('btnRunBatchTxt');
+  btn.disabled = true;
+  btnTxt.textContent = 'RUNNING…';
+  abortBtnMode = 'stop';
+  const abortBtn = document.getElementById('btnAbortBatch');
+  abortBtn.disabled = false;
+  abortBtn.className = 'btn sm ghost danger';
+  document.getElementById('abortBtnTxt').textContent = 'STOP';
+
+  document.getElementById('batchStatus').textContent = 'Running…';
+  term('<span class="p">BATCH</span> starting · ' + batchAccounts.length + ' accounts', 'info');
+
+  const t0 = performance.now();
+  let okCount = 0, errCount = 0;
+
+  for (let i = 0; i < batchAccounts.length; i++){
+    if (batchAbort){
+      term('<span class="p">BATCH</span> aborted by user at ' + (i+1) + '/' + batchAccounts.length, 'warn');
+      break;
+    }
+    const acc = batchAccounts[i];
+    document.getElementById('batchStatus').textContent = 'Running (' + (i+1) + '/' + batchAccounts.length + ')…';
+    renderBatchAccounts();
+
+    term('<span class="p">[' + (i+1) + '/' + batchAccounts.length + ']</span> uid=' + escapeHtml(acc.uid), 'info');
+    const r = await generateOne(acc.uid, acc.password);
+    batchResults.push({ ...acc, ...r });
+
+    if (r.ok){
+      okCount++;
+      term('<span class="p">OK </span> real_uid=' + escapeHtml(r.realUid || '—') + ' · ' + escapeHtml(r.time || ''), 'ok');
+    } else {
+      errCount++;
+      term('<span class="p">ERR</span> ' + escapeHtml(r.error || 'failed'), 'err');
+    }
+
+    renderBatchAccounts();
+    renderBatchResults();
+    updateBatchProgress(i + 1, batchAccounts.length);
+
+    if (autoSave){
+      pushHistory({
+        uid: acc.uid, ok: r.ok, error: r.error || '',
+        time: r.time || '—', realUid: r.realUid || '',
+        token: r.token || '', accessToken: r.accessToken || '',
+        expires: r.expires || '—',
+        expUnix: r.token ? getJwtExpUnix(r.token) : null,
+        at: tsFull(),
+        ts: Date.now()                        // ⭐ যোগ করো
+      });
+    }
+
+    if (!r.ok && stopOnError){
+      term('<span class="p">BATCH</span> stopped on error', 'warn');
+      break;
+    }
+
+    if (delay > 0 && i < batchAccounts.length - 1){
+      await sleep(delay);
+    }
+  }
+
+  const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
+  batchRunning = false;
+  btn.disabled = false;
+  btnTxt.textContent = 'START BATCH';
+
+  /* Switch the abort button to CLEAR mode (enabled) */
+  abortBtnMode = 'clear';
+  abortBtn.disabled = false;
+  abortBtn.className = 'btn sm ghost';
+  document.getElementById('abortBtnTxt').textContent = 'CLEAR';
+
+  document.getElementById('batchStatus').textContent =
+    'Done · ' + okCount + ' ok / ' + errCount + ' failed · ' + elapsed + 's';
+  term('<span class="p">BATCH</span> complete · ' + okCount + ' ok / ' + errCount + ' failed · ' + elapsed + 's',
+    errCount ? 'warn' : 'ok');
+
+  toast('Batch complete: ' + okCount + '/' + (okCount + errCount) + ' successful',
+    errCount ? 'info' : 'ok');
+}
+
+/* ============================================================
+   BATCH EXPORT / COPY (dropdown system)
+   ============================================================ */
+function tsFileSlug(){
+  return new Date().toISOString().replace(/[:.]/g,'-');
+}
+
+function getBatchSuccessOnly(){
+  return batchResults.filter(r => r.ok);
+}
+
+function fmtFullJson(){
+  return JSON.stringify(batchResults.map(r => {
+
+    /* ---- JWT থেকে nickname + svr extract করি ---- */
+    let nickname = '';
+    let svr      = '';
+    let expUnix  = null;
+
+    if (r.token){
+      try {
+        const parts   = r.token.split('.');
+        const header  = JSON.parse(b64urlDecode(parts[0]));
+        const payload = JSON.parse(b64urlDecode(parts[1]));
+
+        svr = String(header.svr || '');
+
+        if (typeof payload.exp === 'number') expUnix = payload.exp;
+
+        if (payload.nickname){
+          const dec = tryDecodeField(payload.nickname);
+          if (dec && !dec.failed) nickname = dec.value;
+        }
+      } catch(e){}
+    }
+
+    const region = svr ? getRegionFromSvr(svr) : { code:'', name:'' };
+
+    return {
+      uid:          r.uid,
+      ok:           !!r.ok,
+      nickname:     nickname,
+      region:       region.code || '',
+      region_name:  region.name || '',
+      svr:          svr,
+      real_uid:     r.realUid     || '',
+      open_id:      r.openId      || '',
+      access_token: r.accessToken || '',
+      token:        r.token       || '',
+      time:         r.time        || '',
+      expires:      r.expires     || '',
+      exp_unix:     expUnix,                    /* machine-readable */
+      error:        r.error       || ''
+    };
+  }), null, 2);
+}
+
+function fmtFullTxt(){
+  const lines = batchResults.map((r, i) => {
+    if (r.ok){
+      return '#' + (i+1) + ' uid=' + r.uid + '\n' +
+             '  real_uid=' + (r.realUid || '—') + '\n' +
+             '  access_token=' + (r.accessToken || '—') + '\n' +
+             '  jwt_token=' + (r.token || '—') + '\n' +
+             '  expires=' + (r.expires || '—') + '\n' +
+             '  time=' + (r.time || '—');
+    }
+    return '#' + (i+1) + ' uid=' + r.uid + '  [FAILED]\n  error=' + (r.error || 'unknown');
+  }).join('\n\n');
+  return 'FF Token Batch Export\nGenerated: ' + new Date().toLocaleString() + '\n\n' + lines;
+}
+
+function fmtPairJson(){
+  return JSON.stringify(getBatchSuccessOnly().map(r => ({
+    uid: r.uid, token: r.token || '', access_token: r.accessToken || ''
+  })), null, 2);
+}
+
+function fmtAccessJson(){
+  return JSON.stringify(getBatchSuccessOnly()
+    .filter(r => r.accessToken)
+    .map(r => ({ uid: r.uid, access_token: r.accessToken })), null, 2);
+}
+
+function fmtTokenJson(){
+  return JSON.stringify(getBatchSuccessOnly()
+    .filter(r => r.token)
+    .map(r => ({ uid: r.uid, token: r.token })), null, 2);
+}
+
+function fmtRawAccessJson(){
+  return JSON.stringify(getBatchSuccessOnly()
+    .filter(r => r.accessToken)
+    .map(r => ({ access_token: r.accessToken })), null, 2);
+}
+
+function fmtRawTokenJson(){
+  return JSON.stringify(getBatchSuccessOnly()
+    .filter(r => r.token)
+    .map(r => ({ token: r.token })), null, 2);
+}
+
+function handleBatchAction(action){
+  if (!batchResults.length){
+    toast('No results yet — run the batch first', 'err');
+    return;
+  }
+
+  const isCopy = action.startsWith('cp-');
+  const stamp  = tsFileSlug();
+
+  /* Per-action 'sarker' config: data, filename prefix, extension, MIME, label */
+  const map = {
+    'full-json':   {
+      data:   fmtFullJson(),
+      prefix: 'ff-sarker-full',
+      ext:    '.json',
+      mime:   'application/json',
+      label:  'Full JSON'
+    },
+    'full-txt': {
+      data:   fmtFullTxt(),
+      prefix: 'ff-sarker-full',
+      ext:    '.txt',
+      mime:   'text/plain;charset=utf-8',
+      label:  'TXT'
+    },
+    'pair-json': {
+      data:   fmtPairJson(),
+      prefix: 'ff-sarker-pair',
+      ext:    '.json',
+      mime:   'application/json',
+      label:  'JSON pair'
+    },
+    'access-json': {
+      data:   fmtAccessJson(),
+      prefix: 'ff-sarker-access',
+      ext:    '.json',
+      mime:   'application/json',
+      label:  'Access JSON'
+    },
+    'token-json': {
+      data:   fmtTokenJson(),
+      prefix: 'ff-sarker-token',
+      ext:    '.json',
+      mime:   'application/json',
+      label:  'Token JSON'
+    },
+    'raw-access': {
+      data:   fmtRawAccessJson(),
+      prefix: 'ff-sarker-raw-access',
+      ext:    '.json',
+      mime:   'application/json',
+      label:  'RAW Access JSON'
+    },
+    'raw-token': {
+      data:   fmtRawTokenJson(),
+      prefix: 'ff-sarker-raw-token',
+      ext:    '.json',
+      mime:   'application/json',
+      label:  'RAW Token JSON'
+    }
+  };
+
+  const key  = action.replace(/^(dl|cp)-/, '');
+  const cfg  = map[key];
+  if (!cfg){ toast('Unknown action', 'err'); return; }
+
+  /* Empty safety check for filter-based formats */
+  if (['access-json','token-json','raw-access','raw-token'].includes(key)){
+    const hasAny = batchResults.some(r => r.ok && (key.includes('access') ? r.accessToken : r.token));
+    if (!hasAny){
+      toast('No matching tokens to ' + (isCopy ? 'copy' : 'download'), 'err');
+      return;
+    }
+  }
+
+  if (isCopy){
+    copyText(cfg.data)
+      .then(() => toast(cfg.label + ' copied', 'ok'))
+      .catch(() => toast('Copy failed', 'err'));
+  } else {
+    const name = cfg.prefix + '-' + stamp + cfg.ext;
+    downloadFile(name, cfg.data, cfg.mime);
+    toast(cfg.label + ' downloaded', 'ok');
+  }
+}
+
+/* Dropdown open/close */
+document.querySelectorAll('.dropdown').forEach(dd => {
+  const toggle = dd.querySelector('[data-dd-toggle]');
+  if (!toggle) return;
+  toggle.addEventListener('click', e => {
+    e.stopPropagation();
+    document.querySelectorAll('.dropdown').forEach(o => { if (o !== dd) o.classList.remove('open'); });
+    dd.classList.toggle('open');
+  });
+});
+
+/* Close all dropdowns on outside click */
+document.addEventListener('click', () => {
+  document.querySelectorAll('.dropdown').forEach(dd => dd.classList.remove('open'));
+});
+
+/* Dropdown item action delegation */
+document.addEventListener('click', e => {
+  const item = e.target.closest('[data-dd-action]');
+  if (!item) return;
+  const action = item.getAttribute('data-dd-action');
+  document.querySelectorAll('.dropdown').forEach(dd => dd.classList.remove('open'));
+  handleBatchAction(action);
+});
+
+/* ============================================================
+   REGIONS
+   ============================================================ */
+const REGIONS = [
+  { code:'IND', name:'India',          iso:'in' },
+  { code:'ME',  name:'Middle East',    iso:'ae' },
+  { code:'VN',  name:'Vietnam',        iso:'vn' },
+  { code:'BD',  name:'Bangladesh',     iso:'bd' },
+  { code:'PK',  name:'Pakistan',       iso:'pk' },
+  { code:'SG',  name:'Singapore',      iso:'sg' },
+  { code:'BR',  name:'Brazil',         iso:'br' },
+  { code:'NA',  name:'North America',  iso:'us' },
+  { code:'ID',  name:'Indonesia',      iso:'id' },
+  { code:'RU',  name:'Russia',         iso:'ru' },
+  { code:'TH',  name:'Thailand',       iso:'th' }
+];
+
+document.getElementById('regionGrid').innerHTML = REGIONS.map((r, i) =>
+  '<div class="region" style="animation-delay:' + (i*0.035) + 's">' +
+    '<span class="flag">' + flagImg(r.iso, 26) + '</span>' +
+    '<span><span class="code">' + r.code + '</span><br><span class="name">' + r.name + '</span></span>' +
+  '</div>'
+).join('');
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+/* Purge expired entries before first render */
+purgeExpiredHistory(true);
+
+renderStats();
+renderFeed();
+renderHistory();
+renderBatchAccounts();
+renderBatchResults();
+updateBatchProgress(0, 0);
+term('<span class="p">$</span> console initialized', 'info');
+checkHealth(true);
+setInterval(() => checkHealth(true), HEALTH_INTERVAL);
+
+/* Auto-purge expired tokens every 60s */
+setInterval(() => purgeExpiredHistory(false), 60000);
+
+document.addEventListener('keydown', function(e){
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k'){
+    e.preventDefault();
+    showView('token');
+    setTimeout(() => uidInput.focus(), 120);
+  }
+});
+
+window.addEventListener('beforeunload', function(e){
+  if (batchRunning){ e.preventDefault(); e.returnValue = ''; }
+});
+
+/* ============================================================
+   MOBILE: sidebar outside-click close
+   ============================================================ */
+(function(){
+  const sidebar   = document.getElementById('sidebar');
+  const hamburger = document.getElementById('hamburger');
+
+  /* Outside click → close */
+  document.addEventListener('click', function(e){
+    if (window.innerWidth > 900) return;
+    if (!sidebar.classList.contains('open')) return;
+    if (sidebar.contains(e.target)) return;
+    if (hamburger.contains(e.target)) return;
+    sidebar.classList.remove('open');
+  });
+
+  /* ESC key → close */
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') sidebar.classList.remove('open');
+  });
+
+  /* Resize → auto-close if going back to desktop */
+  window.addEventListener('resize', function(){
+    if (window.innerWidth > 900) sidebar.classList.remove('open');
+  });
+})();
+/* ============================================================
+   MOBILE BOTTOM SHEET — close button + scroll-to-close
+   ============================================================ */
+(function(){
+
+  /* ------------------------------------------------------------
+     1) Inject a CLOSE button into every dropdown-menu
+        (only visible on mobile via .dd-close CSS)
+     ------------------------------------------------------------ */
+  document.querySelectorAll('.dropdown-menu').forEach(function(menu){
+    if (menu.querySelector('.dd-close')) return;   /* already injected */
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'dd-close';
+    btn.setAttribute('aria-label', 'Close menu');
+    btn.innerHTML =
+      '<span>CLOSE</span>' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">' +
+        '<path d="M18 6L6 18M6 6l12 12"/>' +
+      '</svg>';
+
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const dd = menu.closest('.dropdown');
+      if (dd) dd.classList.remove('open');
+    });
+
+    /* touch feedback for iOS */
+    btn.addEventListener('touchstart', function(){
+      btn.style.transform = 'scale(.97)';
+    }, { passive:true });
+    btn.addEventListener('touchend', function(){
+      btn.style.transform = '';
+    }, { passive:true });
+
+    menu.insertBefore(btn, menu.firstChild);
+  });
+
+  /* ------------------------------------------------------------
+     2) Close bottom sheet when the page is scrolled
+        (scroll inside the sheet itself does NOT bubble to window,
+         so internal scrolling won't close it)
+     ------------------------------------------------------------ */
+  let scrollTick = false;
+  window.addEventListener('scroll', function(){
+    if (window.innerWidth > 900) return;
+    if (scrollTick) return;
+    scrollTick = true;
+    requestAnimationFrame(function(){
+      scrollTick = false;
+      const open = document.querySelector('.dropdown.open');
+      if (open) open.classList.remove('open');
+    });
+  }, { passive:true });
+
+  /* ------------------------------------------------------------
+     3) Close bottom sheet on swipe-down gesture on the grab handle
+        (natural mobile UX — swipe the header down to dismiss)
+     ------------------------------------------------------------ */
+  document.querySelectorAll('.dd-close').forEach(function(handle){
+    let startY = 0;
+    let menu   = null;
+    let dragging = false;
+
+    handle.addEventListener('touchstart', function(e){
+      menu = handle.closest('.dropdown-menu');
+      if (!menu) return;
+      startY = e.touches[0].clientY;
+      dragging = true;
+      menu.style.transition = 'none';
+    }, { passive:true });
+
+    handle.addEventListener('touchmove', function(e){
+      if (!dragging || !menu) return;
+      const dy = Math.max(0, e.touches[0].clientY - startY);
+      menu.style.transform = 'translateY(' + dy + 'px)';
+      menu.style.opacity   = String(Math.max(0.3, 1 - dy / 260));
+    }, { passive:true });
+
+    handle.addEventListener('touchend', function(e){
+      if (!dragging || !menu) return;
+      dragging = false;
+      const dy = Math.max(0, (e.changedTouches[0].clientY - startY));
+      menu.style.transition = '';
+      menu.style.transform  = '';
+      menu.style.opacity    = '';
+
+      if (dy > 70){
+        const dd = menu.closest('.dropdown');
+        if (dd) dd.classList.remove('open');
+      }
+    }, { passive:true });
+  });
+
+})();
+</script>
+</body>
+</html>
